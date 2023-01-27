@@ -40,6 +40,28 @@
                 </router-link>
             </li>
              -->
+            
+             <li class="nav-item">
+                <router-link
+                    class="nav-link"
+                    active-class="active"
+                    exact
+                    :to="{ name: 'projects' }"
+                >
+                 프로젝트
+                </router-link>
+            </li>
+             <!--todo : 관리자로 로그인한 경우에만 관리 페이지 보여질 것-->
+            <li class="nav-item">
+                <router-link
+                    class="nav-link"
+                    active-class="active"
+                    exact
+                    :to="{ name: 'admin' }"
+                >
+                 관리
+                </router-link>
+            </li>
         </ul>
         <ul class="nav navbar-nav pull-xs-right">
             <li class="nav-item">

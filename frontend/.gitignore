@@ -21,8 +21,3 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
-
-/src/main/resources/application.properties
-/src/main/resources/application-dev.properties
-/src/main/resources/application-local.properties
-/frontend/vue.config.js

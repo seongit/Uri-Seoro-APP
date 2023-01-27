@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import HomeView from '../views/HomeView.vue';
@@ -44,6 +45,22 @@ const routes = [
     name: 'boardWrite',
     component: () => import('../views/board/AppBoardWrite.vue'),
   },
+  {
+    path: '/projects',
+    name: 'projects',
+    component: () => import('../views/projects/AppAllProjectsList.vue'),
+  },
+  {
+    path: '/admin',
+    name: 'admin',
+    component: () => import('../views/admin/AppAdminPage.vue'),
+  },
+  {
+    path: '/users',
+    name: 'users',
+    component: () => import('../views/users/AppUserList.vue'),
+  },
+
 ];
 
 const router = new VueRouter({
