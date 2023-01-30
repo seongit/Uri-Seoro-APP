@@ -60,6 +60,22 @@ const routes = [
     name: 'users',
     component: () => import('../views/users/AppUserList.vue'),
   },
+  {
+    path: '/users/new',
+    name: 'userCreate',
+    component: () => import('../views/users/AppUserManager.vue'),
+  },
+  {
+    path: '/users/:id/edit',
+    name: 'userEdit',
+    component: () => import('../views/users/AppUserManager.vue'),
+  },
+  {
+    path: '/users/delete',
+    name: 'userDelete',
+    component: () => import('../views/users/AppUserDelete.vue'),
+  },
+
 
 ];
 
