@@ -18,29 +18,27 @@
                       삭제를 원하시면 사용자 ID를 입력해주세요
                     </p>
 
-                    <div >
-                        <div class="row" style=" margin:auto"  >
-                            <label class="col-md-5" for="deleteUserID"><b>~~~사용자 ID ~~~~</b>
-                              <input
-                                class="form-control border-radius"
-                                id="deleteUserID"
-                                type="text"
-                                v-model="deleteUserID"
-                                placeholder="사용자 ID"
-                              />
-                          </label>
-                          <!--관리자가 사용자의 ID 입력 시 해당 버튼 활성화-->
-                          <div class="btn-group" style="margin-top:25px">
-                              <button @click="userListPage" type="button" class="btn btn-danger" >삭제</button>
-                          </div>
-                       
-                      </div>
+                    <div>
+                      <div class="row" style="margin:auto"  >
+                          <label class="col-md-5" for="deleteUserID"><b>~~~사용자 ID ~~~~</b>
+                            <input
+                              class="form-control border-radius"
+                              id="deleteUserID"
+                              type="text"
+                              v-model="deleteUserID"
+                              placeholder="사용자 ID"
+                            />
+                        </label>
+                        <!--관리자가 사용자의 ID 입력 시 해당 버튼 활성화-->
+                        <div class="btn-group" style="margin-top:25px">
+                            <button @click="userListPage" type="button" class="btn btn-danger" >삭제</button>
+                        </div>
+                     </div>
                     </div>
                   </div>
-
                 </div>
               </div>
-          </fieldset>
+        </fieldset>
 
         <div style="display:flex">
             <div style="margin:auto">

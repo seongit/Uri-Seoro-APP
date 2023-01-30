@@ -14,6 +14,47 @@
           </div>
           
           <!--사용자 검색 영역-->
+          
+          <fieldset class="form-group">
+              <div class="custom-search-form border-radius">
+                <div class="custom-search-form-area">
+                  <b>검색 조건</b> 
+                  <br>
+                  <div class="row" >
+                    <div class="col-sm-3 searchUser">
+                      <div>
+                        <label for="sel1">상태</label>
+                      </div>
+                      <div>
+                        <select class="form-control" id="sel1">
+                          <option>사용중</option>
+                          <option>삭제됨</option>
+                      </select>
+                      </div>
+                    </div>
+                    <div class="col-sm-6 searchUser">
+                      <div>       <label for="">사용자 ID</label></div>
+                      <div>  
+                        <input
+                                class="form-control border-radius"
+                                id="deleteUserID"
+                                type="text"
+                                v-model="deleteUserID"
+                              />
+                      </div>
+                    
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="btn"> 
+                          <router-link :to="{name:'userDelete'}">
+                            <img src="../../../public/images/searchBtn.png" >
+                          </router-link>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        </fieldset>
 
           <!--사용자 리스트 -->
           <table class="table table-hover">
@@ -117,5 +158,12 @@ export default {
     height: 30%;
   }
 
-    
+  .searchUser {
+    font-size: 16px;
+    display: flex;
+  }
+  .searchUser * {
+    margin: auto;
+  }
+
 </style>
