@@ -2,22 +2,28 @@
   <!--eslint-disable-->
   <div class="container page">
     <div class="row">
+      <!--메인 컨텐츠 영역-->
       <div class="col-md-9">
-          <h2>사용자</h2>
-          
-          <div style="float:right" class="row">
+
+          <!--사용자 관리 상단바-->
+          <div class="row">
             <div class="col-md-9">
-              <router-link :to="{name:'userCreate'}">
-                <img alt="new User" src="../../../public/images/new_user_icon.png">
-              </router-link>
+              <h2>사용자</h2>
+            </div>
+            <div>
+              <div class="col-md-9" style="float:right">
+                <router-link :to="{name:'userCreate'}">
+                  <img alt="new User" src="../../../public/images/new_user_icon.png">
+                </router-link>
+              </div>
             </div>
           </div>
           
           <!--사용자 검색 영역-->
-          
           <fieldset class="form-group">
               <div class="custom-search-form border-radius">
                 <div class="custom-search-form-area">
+                  <br>
                   <b>검색 조건</b> 
                   <br>
                   <div class="row" >
@@ -42,11 +48,11 @@
                                 v-model="deleteUserID"
                               />
                       </div>
-                    
                     </div>
                     <div class="col-sm-3">
                         <div class="btn"> 
-                          <router-link :to="{name:'userDelete'}">
+                          <!--사용자 검색 버튼 -->
+                          <router-link :to="{name:''}">
                             <img src="../../../public/images/searchBtn.png" >
                           </router-link>
                         </div>
@@ -54,7 +60,7 @@
                   </div>
                 </div>
               </div>
-        </fieldset>
+          </fieldset>
 
           <!--사용자 리스트 -->
           <table class="table table-hover">
@@ -102,6 +108,7 @@
                   </tr>
               </tbody>
           </table>
+
           <!--페이징 처리 구현 필요-->
           <div style="display:flex">
               <div style="margin:auto">
@@ -114,6 +121,7 @@
                   </ul>  
               </div>
           </div>
+
       </div>
       
       <!--사이드바-->
