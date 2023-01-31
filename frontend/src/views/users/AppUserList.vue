@@ -12,9 +12,9 @@
             </div>
             <div>
               <div class="col-md-9" style="float:right">
-                <router-link :to="{name:'userCreate'}">
-                  <img alt="new User" src="../../../public/images/new_user_icon.png">
-                </router-link>
+                <div class="btn">
+                  <font-awesome-icon icon="fa-solid fa-circle-plus" /> 새 사용자 
+                </div>
               </div>
             </div>
           </div>
@@ -43,9 +43,7 @@
                       <div>  
                         <input
                                 class="form-control border-radius"
-                                id="deleteUserID"
-                                type="text"
-                                v-model="deleteUserID"
+                                type="text"                         
                               />
                       </div>
                     </div>
@@ -85,8 +83,8 @@
                       <td>admin</td>
                       <td>admin@okestro.com</td>
                       <!--관리자 여부 아이콘으로 표시-->
-                      <td>               
-                        <img src="../../../public/images/check.png" style="width:40%">
+                      <td>     
+                        <font-awesome-icon icon="fa-solid fa-check"></font-awesome-icon>     
                       </td>
                       <td>2023/01/24 10:03</td>
                       <!--사용자 계정 관리 버튼-->
@@ -99,11 +97,9 @@
                         </div>
                         -->
                         <!--사용자 삭제 -->
-                        <div class="btn btn-sm"> 
-                          <router-link :to="{name:'userDelete'}">
-                            <img src="../../../public/images/trash.png" >
-                          </router-link>
-                        </div>
+                        <router-link :to="{name:'userDelete'}">
+                            <font-awesome-icon icon="fa-solid fa-trash" />
+                        </router-link>
                       </td>
                   </tr>
               </tbody>

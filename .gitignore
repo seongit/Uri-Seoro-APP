@@ -37,3 +37,4 @@ build/
 /src/main/java/com/sekim/uriseoro/config/enums/BaseURLType.java
 /frontend/vue.config.js
 /frontend/commit_template.md
+/frontend/template.vue
