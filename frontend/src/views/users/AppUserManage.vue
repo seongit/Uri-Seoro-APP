@@ -273,43 +273,43 @@ export default {
 </script>
 
 <style scoped>
-label {
-  display:inline;
-}
-fieldset {
-  padding: 7px;
-}
-.userDetailInfo {
-  background: #F3F3F3;
-  border-radius: 14px;
-  height: 200px;
-  display: flex;
-}
+  label {
+    display:inline;
+  }
+  fieldset {
+    padding: 7px;
+  }
+  .userDetailInfo {
+    background: #F3F3F3;
+    border-radius: 14px;
+    height: 200px;
+    display: flex;
+  }
 
-.userDetailInfo-area {
-  width: 80%;
-  height: 80%;
-  margin: auto;
+  .userDetailInfo-area {
+    width: 80%;
+    height: 80%;
+    margin: auto;
 
-  font-family: 'Noto Sans KR';
-  font-style: normal;
-  font-size: 18px;
-}
+    font-family: 'Noto Sans KR';
+    font-style: normal;
+    font-size: 18px;
+  }
 
-.btn {
-  background: #FCD842;
-}
+  .btn {
+    background: #FCD842;
+  }
 
-.disabledbtn{
-  background: #fcd74260;
-}
+  .disabledbtn{
+    background: #fcd74260;
+  }
 
-.form-control {
-  background: #FFFFFF;
-  border: 1px solid #D9D9D9;
-}
+  .form-control {
+    background: #FFFFFF;
+    border: 1px solid #D9D9D9;
+  }
 
-.border-radius {
-  border-radius: 14px;
-}
+  .border-radius {
+    border-radius: 14px;
+  }
 </style>

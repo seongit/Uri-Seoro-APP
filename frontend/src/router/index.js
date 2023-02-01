@@ -50,6 +50,31 @@ const routes = [
     name: 'projects',
     component: () => import('../views/projects/AppAllProjectsList.vue'),
   },
+
+  {
+    path: '/projects/new',
+    name: 'projectCreate',
+    component: () => import('../views/projects/AppProjectCreate.vue'),
+  },
+
+  {
+    path: '/projects/:id',
+    name: 'projectDetail',
+    component: () => import('../views/projects/AppProjectDetail.vue'),
+  },
+
+  {
+    path: '/projects/:id/settings',
+    name: 'projectEdit',
+    component: () => import('../views/projects/AppProjectManage.vue'),
+  },
+
+  {
+    path: '/projects/:projectName',
+    name: 'projectDelete',
+    component: () => import('../views/projects/AppProjectDelete.vue'),
+  },
+
   {
     path: '/admin',
     name: 'admin',
@@ -68,12 +93,12 @@ const routes = [
   {
     path: '/users/new',
     name: 'userCreate',
-    component: () => import('../views/users/AppUserManager.vue'),
+    component: () => import('../views/users/AppUserManage.vue'),
   },
   {
     path: '/users/:id/edit',
     name: 'userEdit',
-    component: () => import('../views/users/AppUserManager.vue'),
+    component: () => import('../views/users/AppUserManage.vue'),
   },
   {
     path: '/users/delete',

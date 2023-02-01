@@ -12,7 +12,7 @@
             </div>
             <div>
               <div class="col-md-9" style="float:right">
-                <div class="btn">
+                <div class="btn" @click="createUser">
                   <font-awesome-icon icon="fa-solid fa-circle-plus" /> 새 사용자 
                 </div>
               </div>
@@ -137,12 +137,20 @@ import TheAdminSidebar from '@/components/TheAdminSidebar.vue';
 export default {
   components : {TheAdminSidebar},
   methods : {
+
+    createUser(){
+      this.$router.push({
+        path: '/users/new'
+      })
+
+    },
     rowClicked(rowId){
-            // 상세 페이지로 이동
-            this.$router.push({
-                path : `/users/${rowId}/edit`
-            })
-        },
+      // 상세 페이지로 이동
+      this.$router.push({
+          path : `/users/${rowId}/edit`
+      })
+    },
+    
   },
 }
 
