@@ -3,7 +3,6 @@
   <!--eslint-disable-->
   <div>
 
-
     <!--메뉴 헤더-->
     <the-main-menu></the-main-menu>
 
@@ -19,7 +18,7 @@
         <div class="col-md-3">
           <div class="row" style="float:right">
             <div class="btn">
-              <router-link :to="{name:'projectCreate'}">
+              <router-link :to="{name:'issueCreate'}">
                 <font-awesome-icon icon="fa-solid fa-circle-plus" /> 새 일감 만들기
               </router-link>
             </div>
@@ -43,7 +42,7 @@
                   <select class="form-control" id="sel1">
                     <option>사용중</option>
                     <option>삭제됨</option>
-                </select>
+                  </select>
                 </div>
               </div>
 
@@ -56,7 +55,6 @@
                     </router-link>
                   </div>
                 </div>
-                 
               </div>
             </div>
           </div>
@@ -66,75 +64,72 @@
       <!--리스트 항목-->
       <table class="table table-hover">
         <thead>
-        <tr>
-            <th style="width:5%;">#</th>
-            <th style="width:10%">프로젝트</th>
-            <th style="width:5%">유형</th>
-            <th style="width:5%">상태</th>
-            <th style="width:5%">우선순위</th>
-            <th style="width:10%">제목</th>
-            <th style="width:10%">변경일시</th>
-        </tr>
+          <tr>
+              <th style="width:5%;">#</th>
+              <th style="width:10%">프로젝트</th>
+              <th style="width:5%">유형</th>
+              <th style="width:5%">상태</th>
+              <th style="width:5%">우선순위</th>
+              <th style="width:10%">제목</th>
+              <th style="width:10%">변경일시</th>
+          </tr>
         </thead>
         <tbody>
-            <tr>
-                <td >
-                    1
-                </td>
-                <td >
-                    프로젝트 제목
-                </td>
-                <td >
-                    결함
-                </td>
-                <td >
-                    신규
-                </td>
-                <td >
-                    보통
-                </td>
-                <td >
-                    일감 제목
-                </td>
-                <td >
-                  <div class="row">
-                    <div>
-                      2023/01/24 10:03
-                    </div>
-                    <!--일감 편집 버튼 영역-->
-                    <div class="btn" @click="showContextMenu()">
-                      <font-awesome-icon icon="fa-solid fa-ellipsis" />
-                    </div>
+          <tr @click="rowClicked(1)">
+              <td >
+                  1
+              </td>
+              <td>
+                  프로젝트 제목
+              </td>
+              <td >
+                  결함
+              </td>
+              <td >
+                  신규
+              </td>
+              <td >
+                  보통
+              </td>
+              <td>
+                  일감 제목
+              </td>
+              <td onclick='event.cancelBubble=true;'>
+                <div class="row">
+                  <div>
+                    2023/01/24 10:03
                   </div>
-                </td>
-              </tr>
-              <!--context menu 테스트 영역-->
-              <div v-show="values2" id="test" class="item-wrapper relative">
-                 <div class="list-group" >
-                     <div
-                       v-for="(item, index) in itemArray1"
-                       :key="index"
-                       @click.prevent.stop="handleClick1($event, item)"
-                       class="list-group-item list-group-item-action"
-                     >
-                       {{ item.name }}
-                   </div>
-                 </div>
-               </div>
+                  <!--일감 편집 버튼 영역-->
+                  <div class="btn" @click="showContextMenu()">
+                    <font-awesome-icon icon="fa-solid fa-ellipsis" />
+                  </div>
+                </div>
+              </td>
+          </tr>
+          
+          <!--context menu 테스트 영역-->
+          <div v-show="isVisable" id="test" class="item-wrapper context-menu-relative">
+              <div class="list-group" >
+                  <div
+                    v-for="(item, index) in itemArray1"
+                    :key="index"
+                    @click.prevent.stop="handleClick1($event, item)"
+                    class="list-group-item list-group-item-action"
+                  >
+                    {{ item.name }}
+                </div>
+              </div>
+            </div>
 
-               <vue-simple-context-menu
-                   element-id="myFirstMenu"
-                   :options="optionsArray1"
-                   ref="vueSimpleContextMenu1"
-                   @option-clicked="optionClicked1"
-                 >
-               </vue-simple-context-menu>
-         
+          <vue-simple-context-menu
+              element-id="myFirstMenu"
+              :options="optionsArray1"
+              ref="vueSimpleContextMenu1"
+              @option-clicked="optionClicked1"
+            >
+          </vue-simple-context-menu>
         </tbody>
       </table>
-
-
-      
 
     <!--메인 메뉴 끝--> 
     </div>
@@ -153,8 +148,7 @@ export default {
   components : {TheMainMenu} ,
   data() {
     return {
-      values2: false,
-
+      isVisable: false,
       itemArray1: [
         {
           name: '편집'
@@ -187,26 +181,28 @@ export default {
     }
   },
   methods : {
-   
 
-   // 버튼 클릭 시 context Menu 보이도록 구현 
-    showContextMenu(){
-      console.log(this.$refs);
-      this.values2 = true;
-    },  
+  // 버튼 클릭 시 context Menu 보이도록 구현 
+  showContextMenu(){
+    this.isVisable == false ? this.isVisable = true : this.isVisable = false;
+  },  
 
-
-
-    handleClick1(event, item) {
-      this.$refs.vueSimpleContextMenu1.showMenu(event, item);
-    },
+  rowClicked(id){
+    this.$router.push({
+      path:`/issues/${id}`
+    })
+  },
 
 
-    optionClicked1(event) {
-      alert('test');
-      window.alert(JSON.stringify(event));
-    },
+  handleClick1(event, item) {
+    this.$refs.vueSimpleContextMenu1.showMenu(event, item);
+  },
 
+
+  optionClicked1(event) {
+    alert('test');
+    window.alert(JSON.stringify(event));
+  },
 
   }
 }
@@ -215,9 +211,9 @@ export default {
 <style scoped>
 
 
-.relative {
+.context-menu-relative {
     position: relative;
-    left: 1050px;
+    left: 1070px;
     top: -45px;
 }
 </style>
