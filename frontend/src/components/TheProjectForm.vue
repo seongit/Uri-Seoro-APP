@@ -23,11 +23,8 @@
                 <div class="col-sm-1">
                   <label for="">설명  </label> 
                 </div>
-                <div class="col-sm-4">
-                  <input
-                  class="form-control border-radius"
-                  type="text"
-                  />
+                <div class="col-sm-4 description-area">
+                  <textarea class="form-control border-radius "></textarea>
                 </div>
             </div>
             
@@ -74,8 +71,8 @@
     <!--버튼 영역-->
     <div class="bottomBtn-area">
         <div class="bottomBtn">
-            <div class="btn-group">
-                <button @click="projectsListPage" type="button" class="btn">확인</button>
+            <div>
+                <button @click="projectsListPage" type="button" class="btn btn-nomal">확인</button>
                 <button @click="projectsListPage" type="button" class="btn">취소</button>
             </div>
         </div>
@@ -108,20 +105,5 @@ export default {
 .col-sm-4 span{
   font-size: 12px;
 }
-
-
-.bottomBtn-area {
-  display: flex;
-  margin-top: 0.5%;
-}
-.bottomBtn {
-  margin:auto;
-}
-
-.bottomBtn button{
-  margin-right: 10px;
-}
-
-
 
 </style>

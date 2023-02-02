@@ -6,7 +6,7 @@
     <nav class="navbar navbar-light">
       <div class="container">
 
-        <!--메임 메뉴 제목-->
+        <!--메인 메뉴 제목-->
         <div class="custom-form">
           <h1>{{ getPageTitle }}</h1>
         </div>
@@ -14,6 +14,8 @@
         <!--메인 메뉴 항목 -->
         <div id="menu-item">
           <ul class="nav navbar-nav">
+
+            <!--프로젝트 전체 목록 페이지-->
             <li class="nav-item ">
               <router-link
                   class="nav-link selected"
@@ -25,12 +27,13 @@
                 </router-link>
             </li>
 
+            <!--일감 전체 목록 페이지-->
             <li class="nav-item">
                 <router-link
                     class="nav-link"
                     active-class="active"
                     exact
-                    :to="{ name: 'admin' }"
+                    :to="{ name: 'issues' }"
                 >
                   일감
                 </router-link>

@@ -84,19 +84,19 @@ const routes = [
 
   {
     path: '/issues/new',
-    name: 'issuesCreate',
+    name: 'issueCreate',
     component: () => import('../views/issues/AppIssueCreate.vue'),
   },
 
   {
     path: '/issues/:id',
-    name: 'issuesDetail',
+    name: 'issueDetail',
     component: () => import('../views/issues/AppIssueDetail.vue'),
   },
 
   {
     path: '/issues/:id/edit',
-    name: 'issuesEdit',
+    name: 'issueEdit',
     component: () => import('../views/issues/AppIssueEdit.vue'),
   },
 

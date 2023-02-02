@@ -4,7 +4,7 @@
     <div>
       <!--메인 컨텐츠 영역-->
       <div>
-        <!--사용자 관리 상단바-->
+        <!--페이지 상단바-->
         <div class="row">
           <div class="col-md-9">
             <h2>새 프로젝트</h2>
@@ -42,28 +42,3 @@ export default {
 
 }
 </script>
-
-<style scoped>
-
-.col-md-1 {
-  padding-left: 0px;
-}
-
-.col-sm-4 span{
-  font-size: 12px;
-}
-
-.bottomBtn-area {
-  display: flex;
-  margin-top: 0.5%;
-}
-.bottomBtn {
-  margin:auto;
-}
-
-.bottomBtn button{
-  margin-right: 10px;
-}
-
-
-</style>

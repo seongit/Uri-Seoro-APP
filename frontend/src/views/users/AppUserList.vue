@@ -48,7 +48,7 @@
                       </div>
                     </div>
                     <div class="col-sm-3">
-                        <div class="btn"> 
+                        <div class="btn searchBtn"> 
                           <!--사용자 검색 버튼 -->
                           <router-link :to="{name:''}">
                             <img src="../../../public/images/searchBtn.png" >
