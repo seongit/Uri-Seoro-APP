@@ -3,6 +3,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -70,9 +71,33 @@ const routes = [
   },
 
   {
-    path: '/projects/:projectName',
+    path: '/projects/:projectName/delete',
     name: 'projectDelete',
     component: () => import('../views/projects/AppProjectDelete.vue'),
+  },
+
+  {
+    path: '/issues',
+    name: 'issues',
+    component: () => import('../views/issues/AppIssuesList.vue'),
+  },
+
+  {
+    path: '/issues/new',
+    name: 'issuesCreate',
+    component: () => import('../views/issues/AppIssueCreate.vue'),
+  },
+
+  {
+    path: '/issues/:id',
+    name: 'issuesDetail',
+    component: () => import('../views/issues/AppIssueDetail.vue'),
+  },
+
+  {
+    path: '/issues/:id/edit',
+    name: 'issuesEdit',
+    component: () => import('../views/issues/AppIssueEdit.vue'),
   },
 
   {

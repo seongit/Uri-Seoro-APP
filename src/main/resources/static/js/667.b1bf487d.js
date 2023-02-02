@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkfrontend"]=self["webpackChunkfrontend"]||[]).push([[667],{2667:function(n,e,l){l.r(e);var u,t,f=l(1001),r={},s=(0,f.Z)(r,u,t,!1,null,null,null);e["default"]=s.exports}}]);
+//# sourceMappingURL=667.b1bf487d.js.map
