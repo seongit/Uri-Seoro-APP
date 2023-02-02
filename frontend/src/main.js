@@ -5,6 +5,11 @@ import router from './router';
 import store from './store';
 import "./fontAwesomeIcon.js"; // fontAwesomeIcon.js 불러옴
 
+/*VueSimpleContextMenu 컴포넌트 등록*/
+import VueSimpleContextMenu from 'vue-simple-context-menu';
+import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
+Vue.component('vue-simple-context-menu',VueSimpleContextMenu);
+
 Vue.config.productionTip = false;
 
 new Vue({
