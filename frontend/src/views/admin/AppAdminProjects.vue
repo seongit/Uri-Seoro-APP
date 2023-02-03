@@ -50,7 +50,7 @@
                     </div>
                     <div class="col-sm-3">
                         <div class="btn"> 
-                          <!--사용자 검색 버튼 -->
+                          <!--검색 버튼 -->
                           <router-link :to="{name:''}">
                             <img src="../../../public/images/searchBtn.png" >
                           </router-link>
@@ -61,7 +61,7 @@
               </div>
           </fieldset>
 
-          <!--사용자 리스트 -->
+          <!--리스트 항목-->
           <table class="table table-hover">
               <thead>
               <tr>
@@ -82,9 +82,9 @@
                         <font-awesome-icon icon="fa-solid fa-check"></font-awesome-icon>           
                       </td>
                       <td>2023/01/24 10:03</td>
-                      <td>
-                        <!-- 프로젝트 삭제 -->
-                        <div class="btn" @click="test('TestProject')">
+                      <td onclick='event.cancelBubble=true;'>
+                        <!--삭제 버튼-->
+                        <div class="btn" @click="projectDeletePage('TestProject')">
                           <font-awesome-icon icon="fa-solid fa-trash" />
                         </div>
                       </td>
@@ -125,9 +125,15 @@ export default {
   components : {TheAdminSidebar},
   methods : {
 
-    test(prjName){
+    rowClicked(id){
       this.$router.push({
-        path: `/projects/${prjName}`
+        path: `/projects/${id}/settings`
+      })
+    },  
+
+    projectDeletePage(prjName){
+      this.$router.push({
+        path: `/projects/${prjName}/delete`
       })
     }
 

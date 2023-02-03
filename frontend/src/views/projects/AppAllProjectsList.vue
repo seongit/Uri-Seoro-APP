@@ -4,9 +4,9 @@
     <!--메뉴 헤더-->
     <the-main-menu></the-main-menu>
 
-    <!--메인 메뉴-->
+    <!--페이지 메인 영역-->
     <div class="container page">
-      <!--사용자 관리 상단바-->
+      <!--페이지 상단바-->
       <div class="row">
         <div class="col-md-9">
           <h2>프로젝트</h2>
@@ -27,8 +27,6 @@
               </div>
             </div>
         </div>
-
-
       </div>
 
       <!--전체 프로젝트 영역 -->
@@ -92,6 +90,7 @@ export default {
   background: #F3F3F3;
   cursor: pointer;
   border-radius: 3px;
+  padding : 10px;
 }
 
 </style>>
