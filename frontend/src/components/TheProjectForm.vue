@@ -23,8 +23,11 @@
                 <div class="col-sm-1">
                   <label for="">설명  </label> 
                 </div>
-                <div class="col-sm-4 description-area">
-                  <textarea class="form-control border-radius "></textarea>
+                <!-- Toast-ui-Editor 영역-->
+                <div class="col-sm-10 description-area">
+                  <div class="form-control border-radius ">
+                    <editor></editor>
+                  </div>
                 </div>
             </div>
             
@@ -84,7 +87,11 @@
 
 <script>
 /* eslint-disable */
+import TheToastUIEditor from './TheToastUIEditor.vue';
 export default {
+  components : {
+    editor : TheToastUIEditor
+  },
   methods : {
     // 관리자 목록으로 이동
     projectsListPage(){

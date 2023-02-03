@@ -48,9 +48,12 @@
                 <div class="col-md-2">
                   <label for="">설명  </label> 
                 </div>
-                <div class="col-sm-4 description-area">
-                  <!--토스트 UI 에디터로 에디터 기능 구현 필요-->
-                  <textarea class="form-control border-radius "></textarea>
+                <!-- Toast-ui-Editor 영역-->
+                <div class="col-sm-10 description-area">
+                  <div class="form-control border-radius ">
+                    <!-- Toast-ui-Editor -->
+                    <editor></editor>
+                  </div>
                 </div>
             </div>
             
@@ -101,6 +104,8 @@
         </div>
     </fieldset>
 
+
+
     <!--버튼 영역-->
     <div class="bottomBtn-area">
         <div class="bottomBtn">
@@ -116,8 +121,12 @@
 </template>
 
 <script>
+import TheToastUIEditor from './TheToastUIEditor.vue';
 /* eslint-disable */
 export default {
+  components : {
+    editor : TheToastUIEditor
+  },
   methods : {
     // 관리자 목록으로 이동
     projectsListPage(){
