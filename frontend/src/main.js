@@ -10,6 +10,10 @@ import VueSimpleContextMenu from 'vue-simple-context-menu';
 import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
 Vue.component('vue-simple-context-menu',VueSimpleContextMenu);
 
+/* Toast-ui-Editor  */
+import '@toast-ui/editor/dist/toastui-editor.css';
+import { Editor } from '@toast-ui/vue-editor';
+
 Vue.config.productionTip = false;
 
 new Vue({
@@ -18,4 +22,4 @@ new Vue({
   render: (h) => h(App),
 }).$mount('#app');
 
-window.Kakao.init('d3e0ad7625b035449b15f3b5850aecb0'); // 사용하려는 앱의 JavaScript 키 입력
+// window.Kakao.init('d3e0ad7625b035449b15f3b5850aecb0'); // 사용하려는 앱의 JavaScript 키 입력
