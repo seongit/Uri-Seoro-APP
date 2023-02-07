@@ -5,6 +5,12 @@ import router from './router';
 import store from './store';
 import "./fontAwesomeIcon.js"; // fontAwesomeIcon.js 불러옴
 
+/* 모달 */
+import VModal from 'vue-js-modal'
+import VCalendar from 'v-calendar';
+Vue.use(VModal)
+Vue.use(VCalendar,{ componentPrefix: 'vc',})
+
 /*VueSimpleContextMenu 컴포넌트 등록*/
 import VueSimpleContextMenu from 'vue-simple-context-menu';
 import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';

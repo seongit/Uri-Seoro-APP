@@ -108,3 +108,50 @@ svg, a {
 }
 
 
+/* 서브 메뉴 탭 */
+
+.tabs {
+  position: relative;
+  overflow: hidden;
+}
+
+.tabs ul {
+  margin: 0;
+  bottom: 0;
+  min-width: 2000px;
+  width: 100px;
+  border-bottom: 1px solid #bbbbbb;
+}
+
+.tabs ul li {
+  float: left;
+  list-style-type: none;
+  white-space: nowrap;
+  margin-right: 4px;
+  position: relative;
+  margin-bottom: -1px;
+}
+
+.tabs ul li a{
+    display: block;
+    font-size: 0.9em;
+    text-decoration: none;
+    line-height: 1.3em;
+    padding: 4px 6px 4px 6px;
+    border: 1px solid #ccc;
+    border-bottom: 1px solid #bbbbbb;
+    color: #999;
+    font-weight: bold;
+    background-color: #fff;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+.tabs ul li a.selected{
+    background-color: #F3F3F3;
+    border: 1px solid #bbbbbb;
+    border-bottom: 1px solid #fff;
+    color: #444;
+}
+
+

@@ -84,7 +84,7 @@
                       <td>2023/01/24 10:03</td>
                       <td onclick='event.cancelBubble=true;'>
                         <!--삭제 버튼-->
-                        <div class="btn" @click="projectDeletePage('TestProject')">
+                        <div class="btn" @click="confirmDelete('프로젝트명')">
                           <font-awesome-icon icon="fa-solid fa-trash" />
                         </div>
                       </td>
@@ -131,10 +131,8 @@ export default {
       })
     },  
 
-    projectDeletePage(prjName){
-      this.$router.push({
-        path: `/projects/${prjName}/delete`
-      })
+    confirmDelete(prjName){
+      confirm(`${prjName} 삭제하시겠습니까?`);
     }
 
   }

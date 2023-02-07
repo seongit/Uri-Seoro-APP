@@ -1,6 +1,9 @@
 <template>
   <!--eslint-disable-->
   <div>
+
+    <the-main-menu></the-main-menu>
+
     
     <div class="container page">
 
@@ -23,6 +26,7 @@
 /*eslint-disable */
 import TheMainMenu from '../../components/TheMainMenu.vue';
 import TheIssueForm from '../../components/TheIssueForm.vue'
+
 export default {
   components : {TheMainMenu,TheIssueForm}
 

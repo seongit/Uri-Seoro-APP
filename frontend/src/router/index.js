@@ -26,6 +26,16 @@ const routes = [
     component: () => import('../views/AppLogin.vue'),
   },
   {
+    path: '/redminLogin',
+    name: 'redminLogin',
+    component: () => import('../views/AppRedmineLoginTest.vue'),
+  },
+  {
+    path: '/my/page',
+    name : 'myPage',
+    component: () => import('../views/users/AppUserMyPage.vue')
+  },
+  {
     path: '/register',
     name: 'register',
     component: () => import('../views/AppRegister.vue'),
@@ -70,6 +80,11 @@ const routes = [
     component: () => import('../views/projects/AppProjectManage.vue'),
   },
 
+  {
+    path: '/projects/:id/settings/members',
+    name: 'projectMembers',
+    component: () => import('../views/projects/AppProjectMembers.vue'),
+  },
   {
     path: '/projects/:projectName/delete',
     name: 'projectDelete',
