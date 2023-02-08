@@ -139,20 +139,7 @@ export default {
 }
 
 .badge {
-  position: relative;
-  font-weight: bold;
-  font-size: 11px;
-  bottom: 2px;
-  padding: 1px 3px;
-  margin-right: 2px;
-  margin-left: -30px;
-  border-radius: 2px;
-  text-transform: uppercase;
-  text-decoration: none;
-}
-.badge-status-open {
-  color : #205D86;
-  border : 1px solid #205D86;
+  margin-left : 30px !important;
 }
 
 </style>

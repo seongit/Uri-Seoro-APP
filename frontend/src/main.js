@@ -20,6 +20,8 @@ Vue.component('vue-simple-context-menu',VueSimpleContextMenu);
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/vue-editor';
 
+import Vuetable from 'vuetable-2';
+
 Vue.config.productionTip = false;
 
 new Vue({

@@ -26,6 +26,7 @@
         </div>
       </div>
 
+    
       <!--검색 영역-->
       <fieldset class="form-group">
         <div class="custom-search-form border-radius">
@@ -63,50 +64,22 @@
 
       <!--리스트 항목-->
       <table class="table table-hover">
-        <thead>
-          <tr>
-              <th style="width:5%;">#</th>
-              <th style="width:10%">프로젝트</th>
-              <th style="width:5%">유형</th>
-              <th style="width:5%">상태</th>
-              <th style="width:5%">우선순위</th>
-              <th style="width:10%">제목</th>
-              <th style="width:10%">변경일시</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr @click="rowClicked(1)">
-              <td >
-                  1
-              </td>
-              <td>
-                  프로젝트 제목
-              </td>
-              <td >
-                  결함
-              </td>
-              <td >
-                  신규
-              </td>
-              <td >
-                  보통
-              </td>
-              <td>
-                  일감 제목
-              </td>
-              <td onclick='event.cancelBubble=true;'>
-                <div class="row">
-                  <div>
-                    2023/01/24 10:03
-                  </div>
-                  <!--일감 편집 버튼 영역-->
-                  <div class="btn" @click="showContextMenu()">
-                    <font-awesome-icon icon="fa-solid fa-ellipsis" />
-                  </div>
-                </div>
-              </td>
-          </tr>
+        
+          <!--테이블 -->
+          <vuetable ref="vuetable"
+          api-url="http://localhost:8080/test/issues.json"
+          :fields="fields"
+          data-path="issues"
+          >
+
+            <div slot="test-slot" slot-scope="props">
+              <div class="btn" @click="showContextMenu()">
+                <font-awesome-icon icon="fa-solid fa-ellipsis" />
+              </div>
+            </div>
           
+          </vuetable>
+                  
           <!--context menu 테스트 영역-->
           <div v-show="isVisable" id="test" class="item-wrapper context-menu-relative">
               <div class="list-group" >
@@ -128,8 +101,10 @@
               @option-clicked="optionClicked1"
             >
           </vue-simple-context-menu>
-        </tbody>
+
       </table>
+      
+  
 
     <!--메인 메뉴 끝--> 
     </div>
@@ -141,14 +116,18 @@
 <script>
 /*eslint-disable */
 import TheMainMenu from '../../components/TheMainMenu.vue';
-// import VueSimpleContextMenu from 'vue-simple-context-menu';
-// import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
+import Vuetable from 'vuetable-2'
+
+// 테스트 중
+import apiIssue from '../../api/issue.js';
+import { faL } from '@fortawesome/free-solid-svg-icons';
 
 export default {
-  components : {TheMainMenu} ,
+  components : {TheMainMenu,Vuetable} ,
   data() {
     return {
       isVisable: false,
+      isDone : false,
       itemArray1: [
         {
           name: '편집'
@@ -178,6 +157,65 @@ export default {
         },
       ],
 
+      fields : [
+        {
+          name : "id",
+          title : "#",
+          width : "3%",
+        },
+        {
+          name : "project.name",
+          title : "프로젝트명",
+          width : "10%",
+        },
+        {
+          name : "tracker.name",
+          title : "유형",
+          width : "5%",
+        },
+        {
+          name : "status.id",
+          title : "상태",
+          width : "5%",
+          titleClass: "center aligned",
+          dataClass: "center aligned",
+          formatter (value) {
+          return value == 1 ? '<span class="badge badge-status-open ">진행중</span> ' : '<span class="badge badge-status-closed ">완료</span>' ;
+          }
+        },
+        {
+          name : "priority.id",
+          title : "우선순위",
+          width : "5%",
+          formatter (value) {
+            let test = ''
+            if(value == 2){
+              test = '<span class="badge badge-status-open ">보통</span> '
+            }else if(value == 4){
+              test = '<span class="badge badge-status-closed ">긴급</span>'
+            }
+
+            return value = test
+          }
+        },
+        {
+          name : "subject",
+          title : "제목",
+          width : "10%",
+        },
+        {
+          name : "updated_on",
+          title : "변경일시",
+          width : "10%",
+        },
+        {
+          name : "test-slot",
+          title : "상태변경",
+          width : "10%",
+        },
+        
+      ]
+
     }
   },
   methods : {
@@ -204,7 +242,16 @@ export default {
     window.alert(JSON.stringify(event));
   },
 
-  }
+  },
+
+  // mounted(){
+  //   // 테스트 중
+  //   apiIssue.getIssues().then((response)=>{
+  //     console.log(response);
+  //   }).catch((e) => {
+  //     console.log(`ERROR:${e}`);
+  //   })
+  // }
 }
 </script>
 
@@ -216,4 +263,5 @@ export default {
     left: 1070px;
     top: -45px;
 }
+
 </style>
