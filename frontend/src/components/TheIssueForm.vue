@@ -29,21 +29,33 @@
                     <option>지원</option>
                   </select>
                 </div>
+
+                <div class="col-md-1">
+                </div>
+
+                <div class="col-md-2">
+                  <label for="">상태 * </label> 
+                </div>
+
+                <div class="col-sm-3">
+                  <select class="form-control" id="sel1">
+                    <option>신규</option>
+                  </select>
+                </div>
             </div>
 
             <div class="row">
                 <div class="col-md-2">
                   <label for="">제목 * </label> 
-                  
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-10">
                   <input
                   class="form-control border-radius"
                   type="text"
                   />
                 </div>
             </div>
-
+            
             <div class="row">
                 <div class="col-md-2">
                   <label for="">설명  </label> 
@@ -59,25 +71,35 @@
             
  
             <div class="row">
-                <div class="col-md-2">
-                  <label for="">상태 * </label> 
-                  
-                </div>
-                <div class="col-sm-3">
-                  <select class="form-control" id="sel1">
-                    <option>신규</option>
-                  </select>
-                </div>
-                <div class="col-md-1">
-                </div>
-                <div class="col-md-3">
-                  <label for="">시작일자 </label> 
-                </div>
-                <div class="col-sm-3">
-                  <select class="form-control" id="sel1">
-                    <option>신규</option>
-                  </select>
-                </div>
+              <div class="col-md-2">
+                <label for="">시작일자 </label> 
+              </div>
+              <div class="col-sm-3">
+                <!--캘린더-->
+                <date-picker  v-model="issueStartDate"
+                    format="YYYY-MM-DD"
+                    type="date"
+                    placeholder="Start date">>
+                </date-picker>
+              </div>
+
+              <div class="col-md-1">
+              </div>
+
+              <div class="col-md-3">
+                <label for="">완료기한 </label> 
+              </div>
+              <div class="col-sm-3">
+
+                <!--캘린더-->
+                <date-picker  v-model="issueCloseDate"
+                    format="YYYY-MM-DD"
+                    type="date"
+                    placeholder="Close date">>
+                </date-picker>
+
+              </div>
+              
             </div>
 
             <div class="row">
@@ -94,30 +116,7 @@
                 </div>
                 <div class="col-md-1">
                 </div>
-                <div class="col-md-3">
-                  <label for="">완료기한 </label> 
-                </div>
-                <div class="col-sm-3">
-                  <select class="form-control" id="sel1">
-                    <option>낮음</option>
-                    <option>보통</option>
-                    <option>높음</option>
-                    <option>긴급</option>
-                  </select>
-                </div>
-            </div>
 
-            <div class="row">
-                <div class="col-md-2">
-                  <label for="">담당자</label> 
-                </div>
-                <div class="col-sm-3">
-                  <select class="form-control" id="sel1">
-                    <option></option>
-                  </select>
-                </div>
-                <div class="col-md-1">
-                </div>
                 <div class="col-md-3">
                   <label for="">진척도 </label> 
                 </div>
@@ -135,6 +134,19 @@
                     <option value="">90%</option>
                     <option value="">100%</option>
                   </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2">
+                  <label for="">담당자</label> 
+                </div>
+                <div class="col-sm-3">
+                  <select class="form-control" id="sel1">
+                    <option></option>
+                  </select>
+                </div>
+                <div class="col-md-1">
                 </div>
             </div>
 
@@ -178,8 +190,6 @@
         </div>
     </fieldset>
 
-
-
     <!--버튼 영역-->
     <div class="bottomBtn-area">
         <div class="bottomBtn">
@@ -189,19 +199,34 @@
             </div>
         </div>
     </div>
-      
 
   </div>
 </template>
 
 <script>
+/*eslint-disable */
+
+/* calendar api  */
+import DatePicker from 'vue2-datepicker';
+import 'vue2-datepicker/index.css';
+/* Editor api */
 import TheToastUIEditor from './TheToastUIEditor.vue';
+
+
+
 
 /* eslint-disable */
 export default {
   components : {
-    editor : TheToastUIEditor
+    editor : TheToastUIEditor,
+    DatePicker,
   },
+  data(){
+    return {
+      issueStartDate : '',
+      issueCloseDate : '',
+    }
+  },  
   methods : {
     // 관리자 목록으로 이동
     projectsListPage(){
