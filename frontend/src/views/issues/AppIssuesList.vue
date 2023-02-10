@@ -62,49 +62,85 @@
         </div>
       </fieldset>
 
-      <!--리스트 항목-->
-      <table class="table table-hover">
-        
-          <!--테이블 -->
-          <vuetable ref="vuetable"
+
+
+
+      <vuetable ref="vuetable"
           api-url="http://localhost:8080/test/issues.json"
           :fields="fields"
+          @vuetable:row-dblclicked="onRowDoubleClicked"
+          @vuetable:row-clicked="onRowClicked"
           data-path="issues"
+          pagination-path=""
+          class="table table-hover"
           >
 
-            <div slot="test-slot" slot-scope="props">
-              <div class="btn" @click="showContextMenu()">
+          <div slot="test-slot" slot-scope="props">
+            <!--권한이 있는 사용자만 조회 가능-->
+            <div v-if="isVisableEditBtn">
+              <div class="btn" @click.prevent.stop="handleRowClick($event,props.rowData,1)">
                 <font-awesome-icon icon="fa-solid fa-ellipsis" />
               </div>
             </div>
-          
-          </vuetable>
-                  
-          <!--context menu 테스트 영역-->
-          <div v-show="isVisable" id="test" class="item-wrapper context-menu-relative">
-              <div class="list-group" >
-                  <div
-                    v-for="(item, index) in itemArray1"
-                    :key="index"
-                    @click.prevent.stop="handleClick1($event, item)"
-                    class="list-group-item list-group-item-action"
-                  >
-                    {{ item.name }}
-                </div>
-              </div>
+            <div v-else>
+
             </div>
+          </div>
 
-          <vue-simple-context-menu
-              element-id="myFirstMenu"
-              :options="optionsArray1"
-              ref="vueSimpleContextMenu1"
-              @option-clicked="optionClicked1"
-            >
-          </vue-simple-context-menu>
+      </vuetable>
+                  
 
-      </table>
-      
-  
+        <!--
+        <div v-show="isVisable" id="test" class="item-wrapper context-menu-absolute">
+          <div class="list-group" >
+              <div
+                v-for="(item, index) in StatusItemArrayForAdmin"
+                :key="index"
+                @click.prevent.stop="handleClick1($event, item)"
+                class="list-group-item list-group-item-action"
+              >
+                {{ item.name }}
+            </div>
+          </div>
+        </div>
+    -->
+
+      <!--사용자 권한에 따라 조회되는 context-menu 항목이 달라야함 - 추후 구현 필요 -->
+      <!-- <vue-simple-context-menu
+          element-id="myFirstMenu"
+          :options="StatusItemArrayForAdmin"
+          ref="vueSimpleContextMenu"
+          @option-clicked="statusClicked($event)"
+        >
+      </vue-simple-context-menu> -->
+
+      <vue-simple-context-menu
+          element-id="myFirstMenu"
+          :options="StatusItemArrayForAdmin"
+          ref="vueSimpleContextMenu"
+          @option-clicked="statusClicked($event)"
+        >
+      </vue-simple-context-menu>
+
+
+      <vue-simple-context-menu
+          element-id="mySecondMenu"
+          :options="StatusItemArrayForEditor"
+          ref="vueSimpleContextMenu2"
+          @option-clicked="showSubMenu($event)"
+        >
+      </vue-simple-context-menu>
+
+
+
+      <vue-simple-context-menu
+          element-id="myTestMenu"
+          :options="TestArray"
+          ref="testMenu"
+          @subMenu-clicked="test($event)"
+        >
+      </vue-simple-context-menu>
+
 
     <!--메인 메뉴 끝--> 
     </div>
@@ -117,18 +153,26 @@
 /*eslint-disable */
 import TheMainMenu from '../../components/TheMainMenu.vue';
 import Vuetable from 'vuetable-2'
+import FieldsDef from '../vueTableDef/IssueFiledsDef.js'
 
 // 테스트 중
 import apiIssue from '../../api/issue.js';
 import { faL } from '@fortawesome/free-solid-svg-icons';
+import { objectToString } from '@vue/shared';
+
 
 export default {
   components : {TheMainMenu,Vuetable} ,
   data() {
     return {
-      isVisable: false,
+      // 필드 항목 관리를 위해 별도의 파일로 구분하였음 (issueFiledsDef.js)
+      fields : FieldsDef,
+      // isVisableEditBtn : true => 버튼 조회
+      // isVisableEditBtn : false => 버튼 미조회 (기본값) => 테스트를 위해 true로 변경하였음
+      isVisableEditBtn: true,
       isDone : false,
-      itemArray1: [
+      ClickedRowData : {},
+      StatusItemArrayForAdmin: [
         {
           name: '편집'
         },
@@ -136,113 +180,148 @@ export default {
           name: '상태',
         },
         {
+          name: '유형',
+        },
+        {
+          name: '우선순위',
+        },
+        {
+          name: '담당자',
+        },
+        {
+          name: '진척도',
+        },
+        {
           name: '일감삭제',
         },
       ],
-      optionsArray1: [
+      StatusItemArrayForEditor: [
         {
-          name: 'Duplicate',
-          slug: 'duplicate',
+          name: '편집'
         },
         {
-          type: 'divider',
-        },
-        {
-          name: 'Edit',
-          slug: 'edit',
-        },
-        {
-          name: '<em>Delete</em>',
-          slug: 'delete',
+          name: '일감삭제',
         },
       ],
-
-      fields : [
+      TestArray: [
         {
-          name : "id",
-          title : "#",
-          width : "3%",
+          name: '진행중'
         },
         {
-          name : "project.name",
-          title : "프로젝트명",
-          width : "10%",
+          name: '완료'
         },
-        {
-          name : "tracker.name",
-          title : "유형",
-          width : "5%",
-        },
-        {
-          name : "status.id",
-          title : "상태",
-          width : "5%",
-          titleClass: "center aligned",
-          dataClass: "center aligned",
-          formatter (value) {
-          return value == 1 ? '<span class="badge badge-status-open ">진행중</span> ' : '<span class="badge badge-status-closed ">완료</span>' ;
-          }
-        },
-        {
-          name : "priority.id",
-          title : "우선순위",
-          width : "5%",
-          formatter (value) {
-            let test = ''
-            if(value == 2){
-              test = '<span class="badge badge-status-open ">보통</span> '
-            }else if(value == 4){
-              test = '<span class="badge badge-status-closed ">긴급</span>'
-            }
-
-            return value = test
-          }
-        },
-        {
-          name : "subject",
-          title : "제목",
-          width : "10%",
-        },
-        {
-          name : "updated_on",
-          title : "변경일시",
-          width : "10%",
-        },
-        {
-          name : "test-slot",
-          title : "상태변경",
-          width : "10%",
-        },
-        
-      ]
-
+      ],
     }
   },
   methods : {
 
-  // 버튼 클릭 시 context Menu 보이도록 구현 
-  showContextMenu(){
-    this.isVisable == false ? this.isVisable = true : this.isVisable = false;
-  },  
+  
+    rowClicked(id){
+      this.$router.push({
+        path:`/issues/${id}`
+      })
+    },
 
-  rowClicked(id){
-    this.$router.push({
-      path:`/issues/${id}`
-    })
+
+    // 편집 아이콘 클릭 시 호출되는 메소드
+    handleRowClick(event, rowData,userPermission) {
+      // rowData 담아줌
+      this.ClickedRowData = rowData;
+      // context menu 팝업 출력됨
+
+      // 사용자 권한별로 조회되는 context 항목 상이함
+      // 1 == 관리자
+      // 2 == 일감을 할당 받은 개발자 (본인 일감만 편집 가능)
+
+      if(userPermission == 1) {
+        this.$refs.vueSimpleContextMenu.showMenu(event);
+      }else if(userPermission == 2){
+        this.$refs.vueSimpleContextMenu2.showMenu(event);
+      }else{
+        this.$refs.testMenu.showMenu(event);
+      }
+    },
+
+
+    // context-menu 항목 클릭 시 호출되는 메소드
+    statusClicked(event) {
+
+      let clickedStatus = event?.option?.name;
+
+      // context-menu 중 어떤 항목을 체크 했는지 확인
+      console.log(clickedStatus);
+
+      switch(clickedStatus){
+        case '편집' : {this.$router.push({path:`/issues/${this.ClickedRowData.id}`}) }break;
+        case '상태' : {
+          //this.$refs.testMenu.showMenu();
+          let test = document.getElementById('myFirstMenu');
+          test.addEventListener("click",this.showSubMenu(top))
+        }break;
+        case '일감삭제' : {alert(`일감이 삭제 되었습니다.`)} break;
+        default : console.log("default 찍혔음")
+      }
+
+      // window.alert(JSON.stringify(this.ClickedRowData));
+    },
+
+    // 테스트
+    optionClicked: function optionClicked(option) {
+      this.$emit("option-clicked", {
+        item: this.item,
+        option: option
+      });
+    },
+
+
+    showSubMenu(top){
+      this.$refs.testMenu.showMenu(top?.event);
+    },
+
+    // // context-menu 항목 클릭 시 호출되는 메소드
+    // statusClicked(e) {
+
+    //   let clickedStatus = event?.option?.name;
+
+    //   console.log(e);
+    //   // // context-menu 중 어떤 항목을 체크 했는지 확인
+    //   // console.log(clickedStatus);
+    //   // console.log(event);
+    //   // console.log(e);
+    //   // switch(clickedStatus){
+    //   //   case '편집' : {this.$router.push({path:`/issues/${this.ClickedRowData.id}`}) }break;
+    //   //   case '상태' : break;
+    //   //   case '일감삭제' : {alert(`일감이 삭제 되었습니다.`)} break;
+    //   //   default : console.log("default 찍혔음")
+    //   // }
+
+    // // window.alert(JSON.stringify(this.ClickedRowData));
+    // },
+
+
+
+    // 일감 전체 목록 그리드 더블 클릭시 호출되는 메소드
+    onRowDoubleClicked(dataItem){
+      console.log("데이터 : "+JSON.stringify(dataItem.data));
+      console.log("이벤트 : "+JSON.stringify(dataItem.event));
+
+      this.$router.push({
+        path:`/issues/${dataItem.data.id}`
+      })
+    },
+
+
+
+
+    // 테스트 중
+
+
+    // 테스트 종료
+
+
   },
 
 
-  handleClick1(event, item) {
-    this.$refs.vueSimpleContextMenu1.showMenu(event, item);
-  },
-
-
-  optionClicked1(event) {
-    alert('test');
-    window.alert(JSON.stringify(event));
-  },
-
-  },
 
   // mounted(){
   //   // 테스트 중
@@ -258,10 +337,10 @@ export default {
 <style scoped>
 
 
-.context-menu-relative {
-    position: relative;
-    left: 1070px;
-    top: -45px;
+.context-menu-absolute {
+  position: absolute;
+  left: 1000px;
+  top: 70px;
 }
 
 </style>
