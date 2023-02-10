@@ -13,7 +13,7 @@
           <!--형식 : [일감유형] #[일감id]-->
           <div class="row">
             <h2 class="col-md-2">결함 #1</h2>
-            <div class="col-md-1 badge-area">
+            <div class="col-md-2 badge-area">
               <span class="badge badge-status-open ">진행중</span>  
             </div>
           </div>
@@ -138,8 +138,5 @@ export default {
   margin-top:1%;
 }
 
-.badge {
-  margin-left : 30px !important;
-}
 
 </style>
