@@ -11,16 +11,19 @@ import VCalendar from 'v-calendar';
 Vue.use(VModal)
 Vue.use(VCalendar,{ componentPrefix: 'vc',})
 
-/*VueSimpleContextMenu 컴포넌트 등록*/
+/*VueSimpleContextMenu 모듈*/
 import VueSimpleContextMenu from 'vue-simple-context-menu';
 import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
 Vue.component('vue-simple-context-menu',VueSimpleContextMenu);
 
-/* Toast-ui-Editor  */
+/* Toast-ui-Editor 모듈 */
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/vue-editor';
 
-import Vuetable from 'vuetable-2';
+/*vuetable-2 모듈 */
+import Vuetable from 'vuetable-2'
+Vue.component('vuetable',Vuetable);
+Vue.component('vuetable-pagination',Vuetable.VuetablePagination)
 
 Vue.config.productionTip = false;
 

@@ -72,11 +72,14 @@
           @vuetable:row-clicked="onRowClicked"
           data-path="issues"
           pagination-path=""
-          class="table table-hover"
+          class="table table-hover table-height"
+          @vuetable:pagination-data="onPaginationData"
+          @vuetable:loading="onLoading"        
+          @vuetable:loaded="onLoaded"
           >
 
           <div slot="test-slot" slot-scope="props">
-            <!--권한이 있는 사용자만 조회 가능-->
+            <!--권한이 있는 사용자만 편집 버튼 (...) 조회 가능-->
             <div v-if="isVisableEditBtn">
               <div class="btn" @click.prevent.stop="handleRowClick($event,props.rowData,1)">
                 <font-awesome-icon icon="fa-solid fa-ellipsis" />
@@ -86,43 +89,29 @@
 
             </div>
           </div>
-
       </vuetable>
-                  
 
-        <!--
-        <div v-show="isVisable" id="test" class="item-wrapper context-menu-absolute">
-          <div class="list-group" >
-              <div
-                v-for="(item, index) in StatusItemArrayForAdmin"
-                :key="index"
-                @click.prevent.stop="handleClick1($event, item)"
-                class="list-group-item list-group-item-action"
-              >
-                {{ item.name }}
-            </div>
-          </div>
-        </div>
-    -->
-
+      <!-- 페이징 영역 -->
+      <vuetable-pagination 
+      ref="pagination"
+      :css="css.pagination"
+      class="row"
+      @vuetable-pagination:change-page="onChangePage"
+      >
+      </vuetable-pagination>
+      
       <!--사용자 권한에 따라 조회되는 context-menu 항목이 달라야함 - 추후 구현 필요 -->
-      <!-- <vue-simple-context-menu
-          element-id="myFirstMenu"
-          :options="StatusItemArrayForAdmin"
-          ref="vueSimpleContextMenu"
-          @option-clicked="statusClicked($event)"
-        >
-      </vue-simple-context-menu> -->
-
+      
+      <!--관리자 contextMenu -->
       <vue-simple-context-menu
-          element-id="myFirstMenu"
+          element-id="firstContextMenu"
           :options="StatusItemArrayForAdmin"
-          ref="vueSimpleContextMenu"
+          ref="firstContextMenu"
           @option-clicked="statusClicked($event)"
         >
       </vue-simple-context-menu>
 
-
+      <!--개발자 contextMenu -->
       <vue-simple-context-menu
           element-id="mySecondMenu"
           :options="StatusItemArrayForEditor"
@@ -132,12 +121,22 @@
       </vue-simple-context-menu>
 
 
+      <!-- contextMenu의 하위 contextMenu-->
+      <vue-simple-context-menu
+          element-id="secondContextMenu"
+          :options="StatusArray"
+          ref="secondContextMenu"
+          @option-clicked="subStatusClicked($event,StatusItemArrayForAdmin)"
+        >
+      </vue-simple-context-menu>
+
+
 
       <vue-simple-context-menu
-          element-id="myTestMenu"
+          element-id="testMenu"
           :options="TestArray"
-          ref="testMenu"
-          @subMenu-clicked="test($event)"
+          ref="testContextMenu"
+          @option-clicked="subStatusClicked($event,StatusItemArrayForAdmin)"
         >
       </vue-simple-context-menu>
 
@@ -152,17 +151,21 @@
 <script>
 /*eslint-disable */
 import TheMainMenu from '../../components/TheMainMenu.vue';
-import Vuetable from 'vuetable-2'
 import FieldsDef from '../vueTableDef/IssueFiledsDef.js'
 
 // 테스트 중
+import Vuetable from 'vuetable-2'
+import VuetablePagination from '../../components/VuetablePagination.vue'
+import cssConfig from '../../VuetableCssConfig'
+
 import apiIssue from '../../api/issue.js';
 import { faL } from '@fortawesome/free-solid-svg-icons';
 import { objectToString } from '@vue/shared';
 
 
 export default {
-  components : {TheMainMenu,Vuetable} ,
+  
+  components : {TheMainMenu, Vuetable, VuetablePagination} ,
   data() {
     return {
       // 필드 항목 관리를 위해 별도의 파일로 구분하였음 (issueFiledsDef.js)
@@ -172,6 +175,13 @@ export default {
       isVisableEditBtn: true,
       isDone : false,
       ClickedRowData : {},
+
+      /**
+       * 한계점 : 상위 context-menu에서 하위 context-menu를 갖도록 구현 필요
+       * 현재는 각기 다른 context-menu를 호출하는 형식이기 때문에, 상위와 그에 따른 하위 항목들의 구분이 어려움
+       * 또한, 하위 context의 menu는 db에서 조회하여 동적으로 구현할 필요가 있음 (e.g. 담당자등)
+       * 
+       */
       StatusItemArrayForAdmin: [
         {
           name: '편집'
@@ -195,6 +205,7 @@ export default {
           name: '일감삭제',
         },
       ],
+
       StatusItemArrayForEditor: [
         {
           name: '편집'
@@ -203,7 +214,8 @@ export default {
           name: '일감삭제',
         },
       ],
-      TestArray: [
+
+      StatusArray: [
         {
           name: '진행중'
         },
@@ -211,8 +223,26 @@ export default {
           name: '완료'
         },
       ],
+
+      /** 페이징 처리 관련
+       *  cssConfig : 페이징 처리 관련 css를 config 파일로 정의하였음
+       */
+      css : cssConfig, 
+
+      onLoading() {
+      // console.log('loading... show your spinner here')
+      
+      },
+
+      onLoaded() {
+        // console.log('loaded! .. hide your spinner here')
+      }
+
     }
   },
+
+
+
   methods : {
 
   
@@ -234,16 +264,16 @@ export default {
       // 2 == 일감을 할당 받은 개발자 (본인 일감만 편집 가능)
 
       if(userPermission == 1) {
-        this.$refs.vueSimpleContextMenu.showMenu(event);
+        this.$refs.firstContextMenu.showMenu(event);
       }else if(userPermission == 2){
         this.$refs.vueSimpleContextMenu2.showMenu(event);
       }else{
-        this.$refs.testMenu.showMenu(event);
+        this.$refs.secondContextMenu.showMenu(event);
       }
     },
 
 
-    // context-menu 항목 클릭 시 호출되는 메소드
+    // 상위 context-menu 항목 클릭 시 호출되는 메소드
     statusClicked(event) {
 
       let clickedStatus = event?.option?.name;
@@ -251,56 +281,86 @@ export default {
       // context-menu 중 어떤 항목을 체크 했는지 확인
       console.log(clickedStatus);
 
+      /** 
+       * 추후 리팩토링 필요 
+       * 한계점 : clickedStatus의 문구가 변경되었을 경우 해당 구문으로 들어오지 않음 
+       * */
+
       switch(clickedStatus){
         case '편집' : {this.$router.push({path:`/issues/${this.ClickedRowData.id}`}) }break;
         case '상태' : {
-          //this.$refs.testMenu.showMenu();
-          let test = document.getElementById('myFirstMenu');
-          test.addEventListener("click",this.showSubMenu(top))
+
+          //this.$refs.secondContextMenu.showMenu();
+          let contextMenuEl = document.getElementById('firstContextMenu');
+          contextMenuEl.addEventListener("click",this.showSubMenu(top));
+
         }break;
-        case '일감삭제' : {alert(`일감이 삭제 되었습니다.`)} break;
+
+        case '유형' : {
+
+        } break;
+
+        case '우선순위' : {
+
+        } break;
+
+        case '담당자' : {
+
+        }break;
+
+        case '진척도' : {
+
+        }break;
+
+        case '일감삭제' : {
+          alert(`일감이 삭제 되었습니다.`)
+         
+          this.$refs?.secondContextMenu.hideContextMenu();
+          this.$refs?.firstContextMenu.hideContextMenu();
+
+        } break;
+
         default : console.log("default 찍혔음")
       }
 
       // window.alert(JSON.stringify(this.ClickedRowData));
     },
 
-    // 테스트
-    optionClicked: function optionClicked(option) {
-      this.$emit("option-clicked", {
-        item: this.item,
-        option: option
-      });
+
+    /**
+     * 하위 context-menu 항목 클릭 시 호출되는 메소드
+     * @param {*} params  
+     * 
+     */
+
+    subStatusClicked(obj,params){
+
+      console.log(obj?.option?.name);
+      console.log(params);
+
+      // 하위 context-menu 항목 클릭 시, 하위를 포함한 상위 context-menu가 모두 사라진다.
+      this.$refs?.secondContextMenu.hideContextMenu();
+      this.$refs?.firstContextMenu.hideContextMenu();
     },
 
 
+    /**
+     * 상위 context-menu 클릭 시, 하위 context-menu 출력 메소드 
+     * @param {*} top 
+     */
+    
     showSubMenu(top){
-      this.$refs.testMenu.showMenu(top?.event);
+      this.$refs.secondContextMenu.showMenu(top?.event);
     },
 
-    // // context-menu 항목 클릭 시 호출되는 메소드
-    // statusClicked(e) {
+    hideAllMenu(top){
+      this.$refs.secondContextMenu.hideContextMenu();
+    },  
 
-    //   let clickedStatus = event?.option?.name;
-
-    //   console.log(e);
-    //   // // context-menu 중 어떤 항목을 체크 했는지 확인
-    //   // console.log(clickedStatus);
-    //   // console.log(event);
-    //   // console.log(e);
-    //   // switch(clickedStatus){
-    //   //   case '편집' : {this.$router.push({path:`/issues/${this.ClickedRowData.id}`}) }break;
-    //   //   case '상태' : break;
-    //   //   case '일감삭제' : {alert(`일감이 삭제 되었습니다.`)} break;
-    //   //   default : console.log("default 찍혔음")
-    //   // }
-
-    // // window.alert(JSON.stringify(this.ClickedRowData));
-    // },
-
-
-
-    // 일감 전체 목록 그리드 더블 클릭시 호출되는 메소드
+    /**
+     * 일감 전체 목록 그리드 더블 클릭시 호출되는 메소드
+     * @param {*} dataItem 
+     */
     onRowDoubleClicked(dataItem){
       console.log("데이터 : "+JSON.stringify(dataItem.data));
       console.log("이벤트 : "+JSON.stringify(dataItem.event));
@@ -312,12 +372,51 @@ export default {
 
 
 
+    /**
+     * 페이징 처리 관련
+     */
+
+    // 화면 로딩 시, 페이징 처리 데이터를 세팅하는 메소드 
+    onPaginationData(obj){
+
+      /*
+      The pagination component assumes that the following information are available for its calculation
+      total -- the total number of records available
+      per_page -- the number of records in each page (page size)
+      current_page -- the current page number of this data chunk
+      last_page -- the last page number of this data
+      next_page_url -- URL of the next page
+      prev_page_url -- URL of the previous page
+      from -- the start record of this page, in relation to page size
+      to -- the end record of this page, in relation to page size
+      */
+
+
+      // vuetable-pagination에서 필요하는 데이터 형식에 맞게 가공 필요 
+      // 테스트 코드
+      let paginationData = {
+      total : obj.total_count,
+      per_page : 25,
+      current_page : 1,
+      last_page : 1,
+      next_page_url: '/',
+      prev_page_url: '/',
+      from: 1,
+      to: 100
+      }
+       
+   
+      this.$refs.pagination.setPaginationData(paginationData)
+    },
+
+    onChangePage (page) {
+      this.$refs.vuetable.changePage(page)
+    },
 
     // 테스트 중
 
 
     // 테스트 종료
-
 
   },
 
