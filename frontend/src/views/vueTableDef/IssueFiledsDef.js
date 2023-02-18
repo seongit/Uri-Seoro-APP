@@ -22,8 +22,16 @@ export default [
     width : "5%",
     titleClass: "center aligned",
     dataClass: "center aligned",
-    formatter (value) {
-    return value == 1 ? '<span class="badge badge-status-open ">진행중</span> ' : '<span class="badge badge-status-closed ">완료</span>' ;
+    formatter (value) { 
+
+      let result = '';
+      switch(value){
+        case 1 : {result = '<span class="badge badge-status-open">신규</span> '} break;
+        case 2 : {result = '<span class="badge badge-priority-mid ">진행</span> '}break;
+        case 5 : {result = '<span class="badge badge-status-closed ">완료</span>'} break;
+      }
+
+    return result
     }
   },
   {
@@ -31,14 +39,17 @@ export default [
     title : "우선순위",
     width : "5%",
     formatter (value) {
-      let test = ''
-      if(value == 2){
-        test = '<span class="badge badge-status-open ">보통</span> '
-      }else if(value == 4){
-        test = '<span class="badge badge-status-closed ">긴급</span>'
+      
+      let result = ''
+
+      switch(value){
+        case 1 : {result = '<span class="badge badge-priority-low">낮음</span> '} break;
+        case 2 : {result = '<span class="badge badge-priority-mid ">보통</span> '}break;
+        case 3 : {result = '<span class="badge badge-priority-high ">높음</span>'} break;
+        case 4 : {result = '<span class="badge badge-priority-top ">긴급</span>'} break;
       }
 
-      return value = test
+      return value = result
     }
   },
   {
