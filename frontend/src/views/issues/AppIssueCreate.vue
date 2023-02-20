@@ -15,7 +15,7 @@
         </div> 
 
       <!--입력 폼-->
-      <the-issue-form></the-issue-form>
+      <the-issue-form :isseuDetailObj="isseuDetailObj"></the-issue-form>
 
     </div>
 
@@ -28,7 +28,30 @@ import TheMainMenu from '../../components/TheMainMenu.vue';
 import TheIssueForm from '../../components/TheIssueForm.vue'
 
 export default {
-  components : {TheMainMenu,TheIssueForm}
+  components : {TheMainMenu,TheIssueForm},
+  data () {
+    return {
+      isseuDetailObj : {
+        issueId : 0,
+        projectId : 0,
+        trackerId : 0,
+        trackerName : '',
+        statusId : 0,
+        statusName : '',
+        priorityId : 0,
+        priorityName : '',
+        subject : '',
+        description : '',
+        assignedId : null, 
+        assignedName : null,
+        authorId : 0, 
+        doneRatio : 0,
+        issueCreateDate : '',
+        issueStartDate : '',
+        issueDueDate : '',
+      },
+    }
+  }
 
 }
 </script>

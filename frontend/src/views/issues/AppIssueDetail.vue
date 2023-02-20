@@ -12,7 +12,7 @@
         <div class="col-md-9">
           <!--형식 : [일감유형] #[일감id]-->
           <div class="row">
-            <h2 class="col-md-2">결함 #1</h2>
+            <h2 class="col-md-3"> {{ isseuDetailObj.trackerName }} # {{ isseuDetailObj.issueId }} </h2>
             <div class="col-md-2 badge-area">
               <span class="badge badge-status-open ">진행중</span>  
             </div>
@@ -40,20 +40,34 @@
         <div class="custom-form-area">
 
           <div class="content-items-margin">
-            <h3>제목</h3>
-            <p><b>Redmind Admin</b>이(가) <b>23/01/26</b>에 추가함</p>            
+            <h3>{{ isseuDetailObj.subject }}</h3>
+            <p><b>Redmind Admin</b>이(가) <b>{{ isseuDetailObj.issueCreateDate }}</b>에 추가함</p>            
           </div>
 
          
-          <div class="row">
+          <div class="row content-items-margin content-items-space" >
             <div class="col-sm-2">상태 : </div>
-            <div class="col-sm-1">신규</div>
+            <div class="col-sm-1">{{ isseuDetailObj.statusName }}</div>
+
+            <div class="col-sm-2">우선순위 : </div>
+            <div class="col-sm-1">{{ isseuDetailObj.priorityName }}</div>
+
+            <div class="col-sm-2">진척도 : </div>
+            <div class="col-sm-1">{{ isseuDetailObj.doneRatio }}%</div>
+      
           </div>
      
 
-          <div class="row content-items-margin" >
-            <div class="col-sm-2">우선순위 : </div>
-            <div class="col-sm-1">보통</div>
+          <div class="row content-items-margin content-items-space" >
+            <div class="col-sm-2">시작일자 : </div>
+            <div class="col-sm-1">{{ isseuDetailObj.issueStartDate }}</div>
+
+            <div class="col-sm-2">완료기한 : </div>
+            <div class="col-sm-1">{{ isseuDetailObj.issueDueDate }}</div>
+
+            <div class="col-sm-2">담당자 : </div>
+            <div class="col-sm-1">{{ isseuDetailObj.assignedName }}</div>
+
           </div>
 
           <hr>
@@ -63,11 +77,7 @@
               <b>설명</b>
             </div>
             <div>
-              귀는 가치를 것은 청춘 무엇이 영락과 있는가? 하여도 피어나기 보이는 안고, 봄바람을 것이다. 거선의 가치를 그것을 내려온 동력은 것이다. 청춘 앞이 청춘의 가는 품에 사라지지 것이다. 인간에 천자만홍이 아니한 투명하되 그것은 가는 피는 것이다. 원질이 이상 꽃이 발휘하기 봄날의 이것이다. 곳이 튼튼하며, 그러므로 있는가? 청춘을 않는 인간의 돋고, 아름답고 속에 너의 때문이다. 것은 피가 심장의 품으며, 얼마나 작고 살았으며, 바이며, 봄바람이다.
-
-무한한 이 동력은 고행을 투명하되 지혜는 이상 끓는다. 발휘하기 얼음 위하여 얼마나 약동하다. 갑 날카로우나 낙원을 따뜻한 수 얼음이 작고 동력은 끓는 말이다. 놀이 이성은 하는 것이다. 것은 오직 있는 많이 찾아다녀도, 수 사람은 가지에 거친 것이다. 새가 우리 노래하며 인간의 수 무엇을 철환하였는가? 끝까지 그것은 황금시대의 무엇을 그리하였는가? 생명을 날카로우나 우리는 튼튼하며, 기쁘며, 되려니와, 가슴이 온갖 청춘 때문이다. 청춘의 풍부하게 원질이 열락의 봄바람이다.
-
-있는 되려니와, 힘차게 심장의 하였으며, 끓는 이것이다. 위하여, 못할 천하를 사는가 부패뿐이다. 새 것은 품었기 그들을 그들에게 돋고, 인간에 운다. 살았으며, 남는 청춘을 아니한 봄날의 아름답고 아니다. 풀밭에 꽃이 같지 속에 듣기만 목숨을 얼음이 끝까지 봄바람이다. 인도하겠다는 이 인간이 보이는 행복스럽고 사랑의 구할 그들의 봄바람이다. 피에 곳으로 쓸쓸한 피는 하여도 구할 지혜는 것이다. 대한 얼마나 인류의 트고, 피다. 맺어, 같으며, 돋고, 보내는 튼튼하며, 이상, 있다. 끝에 우리 그들에게 우리 청춘 무엇을 공자는 청춘의 같지 이것이다. 투명하되 갑 뜨거운지라, 이상, 품으며, 커다란 앞이 있다.
+              {{ isseuDetailObj.description }}
             </div>
           </div>
 
@@ -76,7 +86,25 @@
           </div>
           
 
-          <div style="height:100px;" class="content-items-margin">
+          <div style="height:5px;" class="content-items-margin">
+          </div>
+        
+          <div class="col-sm-11" v-for="(item,index) in attachments"
+          :key="index"
+          :value="item.id">
+            <div class="attachment-area">
+              <font-awesome-icon icon="fa-solid fa-paperclip" />
+              <a :href="item.content_url">{{ item.filename }}</a>
+              <!--삭제 버튼-->
+              <!--관리자 + 담당자만 해당 버튼 보이도록 할 것 -->
+              <font-awesome-icon icon="fa-solid fa-trash" class="btn" @click="handleFileDelete(index)" />
+            </div>  
+            <div class="attachment-area">
+              <a :href="item.content_url">
+                <img class="attachment-item" :src="item.thumbnail_url">
+              </a>
+            </div>
+    
           </div>
 
         </div>
@@ -87,7 +115,7 @@
         <div>
           <h3>편집</h3>
         </div>
-        <the-issue-form></the-issue-form>
+        <the-issue-form :isseuDetailObj="isseuDetailObj"></the-issue-form>
       </div>
     
 
@@ -101,7 +129,7 @@
 import TheIssueForm from '../../components/TheIssueForm.vue';
 /* eslint-disable */
 import TheMainMenu from '../../components/TheMainMenu.vue';
-
+import apiIssue from '../../api/issue'
 
 export default {
   components : {TheMainMenu, TheIssueForm},
@@ -109,8 +137,119 @@ export default {
   data() {
     return {
       isVisable : false,
+      issueId : 0,
+      trackerName : '',
+      statusName : '',
+      priorityName : '',
+      subject : '',
+      description : '',
+      assignedName : null,
+      doneRatio : 0,
+      issueCreateDate : '',
+      issueStartDate : '',
+      issueDueDate : '',
+      attachments : [],
+      isseuDetailObj : {
+        issueId : 0,
+        projectId : 0,
+        trackerId : 0,
+        trackerName : '',
+        statusId : 0,
+        statusName : '',
+        priorityId : 0,
+        priorityName : '',
+        subject : '',
+        description : '',
+        assignedId : null, 
+        assignedName : null,
+        authorId : 0, 
+        doneRatio : 0,
+        issueCreateDate : '',
+        issueStartDate : '',
+        issueDueDate : '',
+      },
     }
   },
+
+  mounted(){
+
+    apiIssue.getIssueDetail(this.$route.params.id).then((response) => {
+      
+      this.statusName = response.data.issuse;
+
+      let issueObj = response.data.issue;
+
+      console.log(response.data);
+
+      this.isseuDetailObj.issueId = issueObj.id;
+
+      this.isseuDetailObj.projectId = issueObj.project.id;
+
+      this.isseuDetailObj.trackerId = issueObj.tracker.id;
+
+      this.isseuDetailObj.trackerName = issueObj.tracker.name;
+
+      this.isseuDetailObj.statusId = issueObj.status.id;
+
+      this.isseuDetailObj.statusName = issueObj.status.name;
+
+      this.isseuDetailObj.priorityId = issueObj.priority.id;
+
+      this.isseuDetailObj.priorityName = issueObj.priority.name;
+
+      this.isseuDetailObj.subject = issueObj.subject;
+
+      this.isseuDetailObj.description  = issueObj.description;
+
+      this.isseuDetailObj.doneRatio = issueObj.done_ratio;
+
+      this.isseuDetailObj.issueCreateDate = this.formattingDate(issueObj.created_on);
+
+      if(issueObj.start_date != null){
+    
+        this.issueStartDate = this.formattingDate(issueObj.start_date);
+
+        this.isseuDetailObj.issueStartDate = issueObj.start_date;
+
+        console.log(this.isseuDetailObj);
+        
+      }else {
+        this.isseuDetailObj.issueStartDate = '-';
+      }
+
+      if(issueObj.due_date != null){
+
+        this.isseuDetailObj.issueDueDate = this.formattingDate(issueObj.due_date)
+        this.isseuDetailObj.issueDueDate = issueObj.due_date;
+        console.log(this.isseuDetailObj);
+
+      }else {
+        this.isseuDetailObj.issueDueDate = '-';
+      }
+
+      if(issueObj.assigned_to != null){
+        this.isseuDetailObj.assignedId = issueObj.assigned_to.id;
+        this.isseuDetailObj.assignedName = issueObj.assigned_to.name;
+      }else{
+        this.isseuDetailObj.assignedName = '-';
+      }
+
+      this.attachments = issueObj.attachments;
+
+      // this.objTest = {
+      //   "subject" : this.subject,
+      //   "description" : this.description,
+      //   "projectId" : issueObj.project.id,
+      //   "statusId" : issueObj.status.id,
+      // }
+
+
+    }).catch((error) => {
+      console.log(error);
+    })
+
+  },
+
   methods : {
     // 편집 버튼 클릭시 편집 영역 활성화
     editBtnClick(){
@@ -118,24 +257,54 @@ export default {
       // 편집 버튼을 다시 클릭하면 접힘
       this.isVisable == false ? this.isVisable = true : this.isVisable = false;
 
+
+
     },
     // 삭제 버튼 클릭시 alert로 확인함
     delIssue(){
-      window.alert('삭제하시겠습니까?');
+      window.confirm('삭제하시겠습니까?');
+    },
+
+    formattingDate(param){
+
+      let yy = param.substring(2,4)
+      let mm = param.substring(5,7);
+      let dd = param.substring(8,10);
+
+      let formatData = yy + "/" + mm + "/" + dd
+      
+      return formatData;
+    },
+
+    setIssueFormComponentValue(){
+
     }
-  }
+
+
+  },
 }
 </script>
 
 <style>
 
 .content-items-margin {
-  margin-top:30px !important;;
-  margin-bottom:30px !important;;
+  margin-top:30px !important;
+  margin-bottom:30px !important;
+}
+
+.content-items-space > div {
+  margin-right:30px !important;
 }
 
 .badge-area {
   margin-top:1%;
+}
+
+.attachment-item {
+  width:3%;
+  height:3%;
+  border-radius: 3px;
+  cursor: pointer;
 }
 
 
