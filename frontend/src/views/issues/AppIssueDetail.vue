@@ -12,7 +12,7 @@
         <div class="col-md-9">
           <!--형식 : [일감유형] #[일감id]-->
           <div class="row">
-            <h2 class="col-md-3"> {{ isseuDetailObj.trackerName }} # {{ isseuDetailObj.issueId }} </h2>
+            <h2 class="col-md-3"> {{ trackerName }} # {{ issueId }} </h2>
             <div class="col-md-2 badge-area">
               <span class="badge badge-status-open ">진행중</span>  
             </div>
@@ -25,7 +25,7 @@
         <div class="col-md-3">
 
           <div class="row" style="float:right">
-            <div class="btn" @click="editBtnClick()">
+            <div class="btn" @click="editBtnClick(issueId)">
               <font-awesome-icon icon="fa-solid fa-pen" /> 편집
             </div>
             <div class="btn" @click="delIssue()">
@@ -40,33 +40,33 @@
         <div class="custom-form-area">
 
           <div class="content-items-margin">
-            <h3>{{ isseuDetailObj.subject }}</h3>
-            <p><b>Redmind Admin</b>이(가) <b>{{ isseuDetailObj.issueCreateDate }}</b>에 추가함</p>            
+            <h3>{{ subject }}</h3>
+            <p><b>Redmind Admin</b>이(가) <b>{{ issueCreateDate }}</b>에 추가함</p>            
           </div>
 
          
           <div class="row content-items-margin content-items-space" >
             <div class="col-sm-2">상태 : </div>
-            <div class="col-sm-1">{{ isseuDetailObj.statusName }}</div>
+            <div class="col-sm-1">{{ statusName }}</div>
 
             <div class="col-sm-2">우선순위 : </div>
-            <div class="col-sm-1">{{ isseuDetailObj.priorityName }}</div>
+            <div class="col-sm-1">{{ priorityName }}</div>
 
             <div class="col-sm-2">진척도 : </div>
-            <div class="col-sm-1">{{ isseuDetailObj.doneRatio }}%</div>
+            <div class="col-sm-1">{{ doneRatio }}%</div>
       
           </div>
      
 
           <div class="row content-items-margin content-items-space" >
             <div class="col-sm-2">시작일자 : </div>
-            <div class="col-sm-1">{{ isseuDetailObj.issueStartDate }}</div>
+            <div class="col-sm-1">{{ issueStartDate }}</div>
 
             <div class="col-sm-2">완료기한 : </div>
-            <div class="col-sm-1">{{ isseuDetailObj.issueDueDate }}</div>
+            <div class="col-sm-1">{{ issueDueDate }}</div>
 
             <div class="col-sm-2">담당자 : </div>
-            <div class="col-sm-1">{{ isseuDetailObj.assignedName }}</div>
+            <div class="col-sm-1">{{ assignedName }}</div>
 
           </div>
 
@@ -77,7 +77,7 @@
               <b>설명</b>
             </div>
             <div>
-              {{ isseuDetailObj.description }}
+              {{ description }}
             </div>
           </div>
 
@@ -97,7 +97,7 @@
               <a :href="item.content_url">{{ item.filename }}</a>
               <!--삭제 버튼-->
               <!--관리자 + 담당자만 해당 버튼 보이도록 할 것 -->
-              <font-awesome-icon icon="fa-solid fa-trash" class="btn" @click="handleFileDelete(index)" />
+              <font-awesome-icon icon="fa-solid fa-trash" class="btn" @click="handleFileDelete(index, item.id)" />
             </div>  
             <div class="attachment-area">
               <a :href="item.content_url">
@@ -149,6 +149,7 @@ export default {
       issueStartDate : '',
       issueDueDate : '',
       attachments : [],
+      // prop으로 전달할 데이터 
       isseuDetailObj : {
         issueId : 0,
         projectId : 0,
@@ -173,76 +174,77 @@ export default {
 
   mounted(){
 
+    // null check 필요
     apiIssue.getIssueDetail(this.$route.params.id).then((response) => {
       
       this.statusName = response.data.issuse;
 
       let issueObj = response.data.issue;
 
-      console.log(response.data);
+      // console.log(response.data);
 
       this.isseuDetailObj.issueId = issueObj.id;
+      this.issueId = issueObj.id;
 
       this.isseuDetailObj.projectId = issueObj.project.id;
+      this.projectId = issueObj.project.id;
+  
 
       this.isseuDetailObj.trackerId = issueObj.tracker.id;
+      this.trackerId = issueObj.tracker.id;
 
+      this.trackerName = issueObj.tracker.name;
       this.isseuDetailObj.trackerName = issueObj.tracker.name;
 
       this.isseuDetailObj.statusId = issueObj.status.id;
+      this.statusId = issueObj.status.id;
 
       this.isseuDetailObj.statusName = issueObj.status.name;
+      this.statusName = issueObj.status.name;
 
       this.isseuDetailObj.priorityId = issueObj.priority.id;
+      this.priorityId = issueObj.priority.id;
 
       this.isseuDetailObj.priorityName = issueObj.priority.name;
+      this.priorityName = issueObj.priority.name;
 
       this.isseuDetailObj.subject = issueObj.subject;
+      this.subject = issueObj.subject;
 
       this.isseuDetailObj.description  = issueObj.description;
+      this.description = issueObj.description;
 
       this.isseuDetailObj.doneRatio = issueObj.done_ratio;
+      this.doneRatio = issueObj.done_ratio;
 
       this.isseuDetailObj.issueCreateDate = this.formattingDate(issueObj.created_on);
+      this.issueCreateDate = this.formattingDate(issueObj.created_on);
 
       if(issueObj.start_date != null){
-    
-        this.issueStartDate = this.formattingDate(issueObj.start_date);
-
         this.isseuDetailObj.issueStartDate = issueObj.start_date;
-
-        console.log(this.isseuDetailObj);
+        this.issueStartDate = this.formattingDate(issueObj.start_date);
         
       }else {
-        this.isseuDetailObj.issueStartDate = '-';
+        this.issueStartDate = '-';
       }
 
       if(issueObj.due_date != null){
-
-        this.isseuDetailObj.issueDueDate = this.formattingDate(issueObj.due_date)
         this.isseuDetailObj.issueDueDate = issueObj.due_date;
-        console.log(this.isseuDetailObj);
-
+        this.issueDueDate =  this.formattingDate(issueObj.due_date);
       }else {
-        this.isseuDetailObj.issueDueDate = '-';
+        this.issueDueDate = '-';
       }
 
       if(issueObj.assigned_to != null){
         this.isseuDetailObj.assignedId = issueObj.assigned_to.id;
+        this.assignedId = issueObj.assigned_to.id;
         this.isseuDetailObj.assignedName = issueObj.assigned_to.name;
+        this.assignedName = issueObj.assigned_to.name;
       }else{
-        this.isseuDetailObj.assignedName = '-';
+        this.assignedName = '-';
       }
 
       this.attachments = issueObj.attachments;
-
-      // this.objTest = {
-      //   "subject" : this.subject,
-      //   "description" : this.description,
-      //   "projectId" : issueObj.project.id,
-      //   "statusId" : issueObj.status.id,
-      // }
-
 
     }).catch((error) => {
       console.log(error);
@@ -252,11 +254,12 @@ export default {
 
   methods : {
     // 편집 버튼 클릭시 편집 영역 활성화
-    editBtnClick(){
+    editBtnClick(issueId){
 
       // 편집 버튼을 다시 클릭하면 접힘
       this.isVisable == false ? this.isVisable = true : this.isVisable = false;
 
+      console.log(issueId);
 
 
     },
@@ -276,9 +279,33 @@ export default {
       return formatData;
     },
 
-    setIssueFormComponentValue(){
 
-    }
+      // 삭제 아이콘 클릭 시 - 특정 첨부파일 삭제
+      handleFileDelete(idx, attachmentID){
+      
+    
+      if(window.confirm("첨부파일을 삭제하시겠습니까?")){
+        
+        apiIssue.deleteAttachment(attachmentID).then((response) => {
+
+          console.log(response);
+
+          if(response.data == "200 OK"){
+            // 화면단에서 첨부파일 삭제
+            const removeAttachmentList = this.attachments;
+            removeAttachmentList.splice(idx,1);
+          } 
+
+
+          }).catch((error) => {
+          console.log(error);
+          })
+
+      };
+
+      console.log(attachmentID);
+    },
+  
 
 
   },

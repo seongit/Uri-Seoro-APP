@@ -11,7 +11,7 @@
                     <label for="selectBoxProject">프로젝트 * </label> 
                   </div>
                   <div class="col-sm-3">
-                    <select class="form-control" id="selectBoxProject"  @change="setSelect($event)">
+                    <select v-model="isseuDetailObj.projectId" class="form-control" id="selectBoxProject"  @change="setSelect($event)">
                         <option v-for="(item, index) in projectList"
                           :key="index"
                           :value="item.value"
@@ -27,11 +27,13 @@
                     <label for="selectBoxTracker">유형 * </label> 
                   </div>
                   <div class="col-sm-3">
-                    <select class="form-control" id="selectBoxTracker" @change="setSelect($event)">
+                    <select  v-model="isseuDetailObj.trackerId" class="form-control" id="selectBoxTracker" @change="setSelect($event)">
                       <option v-for="(item,index) in trackerList"
                         :key="index"
-                        :value="item.id">
+                        :value="item.id"
+                       >
                         {{ item.name }}
+                      
                       </option>
                     </select>
                   </div>
@@ -44,10 +46,11 @@
                   </div>
 
                   <div class="col-sm-3">
-                    <select class="form-control" id="selectBoxStatus" @change="setSelect($event)">
+                    <select v-model="isseuDetailObj.statusId" class="form-control" id="selectBoxStatus" @change="setSelect($event)">
                       <option v-for="(item,index) in statusesList" 
                       :key="index"
                       :value="item.id"
+                      
                       >
                       {{ item.name }}
                       </option>
@@ -64,7 +67,7 @@
                     class="form-control border-radius"
                     type="text"
                     id = "inputSubject"
-                    v-model="subject"
+                    v-model="isseuDetailObj.subject"
                     />
                   </div>
               </div>
@@ -79,7 +82,7 @@
                       <!-- Toast-ui-Editor -->
                       <!--에디터 기능 추후 구현 예정
                       <editor></editor>-->
-                      <textarea v-model="description" class="form-control"  rows="10" style="resize:none"></textarea>
+                      <textarea v-model="isseuDetailObj.description" class="form-control"  rows="10" style="resize:none"></textarea>
                     </div>
                   </div>
               </div>
@@ -91,7 +94,7 @@
                 </div>
                 <div class="col-sm-3">
                   <!--캘린더-->
-                  <date-picker  v-model="issueStartDate"
+                  <date-picker  v-model="isseuDetailObj.issueStartDate"
                       value-type="format"
                       type="date"
                       placeholder="Start date">>
@@ -107,7 +110,7 @@
                 <div class="col-sm-3">
 
                   <!--캘린더-->
-                  <date-picker  v-model="issueDueDate"
+                  <date-picker  v-model="isseuDetailObj.issueDueDate"
                       value-type="format"
                       type="date"
                       placeholder="Close date">>
@@ -122,10 +125,11 @@
                     <label for="priorityId">우선순위 * </label> 
                   </div>
                   <div class="col-sm-3">
-                    <select class="form-control" id="selectBoxPriority" @change="setSelect($event)">
+                    <select v-model="isseuDetailObj.priorityId" class="form-control" id="selectBoxPriority" @change="setSelect($event)">
                       <option v-for="(item,index) in priorityList"
                       :key="index"
-                      :value="item.id">
+                      :value="item.id"
+                      >
                         {{ item.name }}
                       </option>
                     </select>
@@ -137,7 +141,7 @@
                     <label for="selectBoxDoneRatio">진척도 </label> 
                   </div>
                   <div class="col-sm-3">
-                    <select class="form-control" id="selectBoxDoneRatio" @change="setSelect($event)">
+                    <select v-model="isseuDetailObj.doneRatio" class="form-control" id="selectBoxDoneRatio" @change="setSelect($event)">
                       <option
                         v-for="(item,index) in doneRatioList"
                         :key="index"
@@ -154,7 +158,7 @@
                     <label for="assignedId">담당자</label> 
                   </div>
                   <div class="col-sm-3">
-                    <select class="form-control" id="selectBoxAssignMember" @change="setSelect($event)">
+                    <select v-model="isseuDetailObj.assignedId" class="form-control" id="selectBoxAssignMember" @change="setSelect($event)">
                       <option v-for="(item,index) in projectMembersList"
                       :key="index"
                       :value="item.value">
@@ -200,6 +204,8 @@
                   </div>
               </div>
 
+
+              <!--props 테스트 영역 -->
             </div>
           </div>
       </fieldset>
@@ -208,10 +214,10 @@
       <div class="bottomBtn-area">
           <div class="bottomBtn">
               <div>
-                   <button  type="submit" class="btn btn-nomal">확인</button>
-                  <!-- <button @click="onSubmitPostIssue" type="button" class="btn btn-nomal">확인</button>
-                  <button @click="historyBackPage" type="button" class="btn">취소</button> -->
-              </div>
+                   <button type="submit" class="btn btn-nomal">{{ getBtnText }}</button>
+                  <!-- <button @click="onSubmitPostIssue" type="button" class="btn btn-nomal">확인</button> -->
+                  <button @click="historyBackPage" type="button" class="btn">취소</button>
+                </div>
           </div>
       </div>
   </form>
@@ -231,8 +237,6 @@ import TheToastUIEditor from './TheToastUIEditor.vue';
 
 // api 호출
 import apiIssue from '../api/issue.js';
-import { zip } from 'rxjs';
-import { fas } from '@fortawesome/free-solid-svg-icons';
 
 
 /* eslint-disable */
@@ -240,6 +244,9 @@ export default {
   components : {
     editor : TheToastUIEditor,
     DatePicker,
+  },
+  props : {
+        isseuDetailObj : Object
   },
   data(){
     return {
@@ -260,25 +267,9 @@ export default {
         {name : "테스트 레드마인입니다",  value: 1 },
         {name : "Example name",  value: 3 }
       ],
-      trackerList : [
-        {name : "선택", value: 0 },
-        {name : "결함" , value: 1},
-        {name : "새기능" , value: 4},
-        {name : "지원" , value: 5},
-      ],
-      priorityList : [
-        {name : "선택", value: 0 },
-        {name : "낮음" , value: 1},
-        {name : "보통" , value: 2},
-        {name : "높음" , value: 3},
-        {name : "긴급" , value: 4},
-      ],
-      statusesList : [
-        {name : "선택", value: 0 },
-        {name : "신규", value:  1 },
-        {name : "진행",  value: 2 },
-        {name : "완료",  value: 5 },
-      ],
+      trackerList : [],
+      priorityList : [],
+      statusesList : [],
       doneRatioList : [
         {name : "0%",   value: 0 },
         {name : "10%",  value: 10 },
@@ -292,29 +283,38 @@ export default {
         {name : "90%",  value: 90 },
         {name : "100%", value: 100 },
       ],
+
+      // api DB 상에서 조회되는 항목들로 구성 되도록 개발 필요 
       projectMembersList : [
-        {name : "선택", value: 0},
-        {name : "Redmine", value : 1},
-        {name : "dev", value : 2}
+        {name : "선택", value: ""},
+        {name : "Redmine", value : "1"},
+        {name : "dev", value : "8"}
       ]
       ,
       uploadFileList : [],
 
       uploads : [],
 
+
     }
   },  
+
+  computed : {
+    getBtnText() {
+      if(this.$route.params.id)	return "수정"
+      return "등록"
+    }
+  },
 
   mounted(){
 
     this.settingSelectBoxList();
     
+    
   }
 
   , 
   methods : {
-
-
 
     settingSelectBoxList(){
 
@@ -326,7 +326,8 @@ export default {
         this.trackerList = res.trackers;
 
         // select box 0번째 요소의 id를 초기값 설정
-        this.trackerId = res.trackers[0].id
+        this.trackerId = res.trackers[0].id;
+        
 
       }).catch((error) => {
         console.log(error);
@@ -365,6 +366,7 @@ export default {
         console.log(error);
       })
 
+
     },
 
 
@@ -383,36 +385,89 @@ export default {
       // 입력값 검증 후 JSONObject에 데이터 담기 
       if(this.formValidation()){
         
-        let IssueData = 
+        // let IssueData = 
+        //             {
+        //             "project_id" :  this.projectId,
+        //             "tracker_id" : this.trackerId, 
+        //             "status_id" : this.statusId, 
+        //             "priority_id": this.priorityId, 
+        //             "subject" : this.subject, 
+        //             "description" : this.description, 
+        //             "assigned_to_id" : this.assignedId,
+        //             "author_id" : this.authorId,
+        //             "done_ratio" : this.doneRatio,
+        //             "start_date" : this.issueStartDate,
+        //             "due_date" : this.issueDueDate,
+        //             "uploads" : this.uploads
+        //           }
+
+        console.log(this.isseuDetailObj);
+
+
+        let issue = 
                     {
-                    "project_id" :  this.projectId,
-                    "tracker_id" : this.trackerId, 
-                    "status_id" : this.statusId, 
-                    "priority_id": this.priorityId, 
-                    "subject" : this.subject, 
-                    "description" : this.description, 
-                    "assigned_to_id" : this.assignedId,
-                    "author_id" : this.authorId,
-                    "done_ratio" : this.doneRatio,
-                    "start_date" : this.issueStartDate,
-                    "due_date" : this.issueDueDate,
+                    "project_id" :  this.isseuDetailObj.projectId,
+                    "tracker_id" : this.isseuDetailObj.trackerId, 
+                    "status_id" : this.isseuDetailObj.statusId, 
+                    "priority_id": this.isseuDetailObj.priorityId, 
+                    "subject" : this.isseuDetailObj.subject,
+                    "description" : this.isseuDetailObj.description, 
+                    "assigned_to_id" : this.isseuDetailObj.assignedId,
+                    "author_id" : this.isseuDetailObj.authorId,
+                    "done_ratio" : this.isseuDetailObj.doneRatio,
+                    "start_date" : this.isseuDetailObj.issueStartDate,
+                    "due_date" : this.isseuDetailObj.issueDueDate,
                     "uploads" : this.uploads
                   }
-      
-        apiIssue.postIssue(IssueData).then((response)=>{
 
-            if(response.status == 200){
-              alert('일감 등록에 성공하였습니다.');
-              this.IssuesListPage();
-            }else{
-              console.log(response);
+          
+
+        // 일감 편집
+        if(this.$route.params.id)	{
+
+          let requestIssue = {
+            issue
+          }
+
+          apiIssue.editIssue(this.$route.params.id, requestIssue).then((response) => {
+
+            console.log(response.data);
+            if(response.data == '201 OK'){
+              alert("정상적으로 일감 수정이 완료되었습니다.");
+              
+              // 다음과 같이하면 에러남
+              // Uncaught (in promise) NavigationDuplicated: Avoided redundant navigation to current location: "/issues/227".
+              // this.$router.push({
+              //   path:`/issues/${this.$route.params.id}`
+              // })
+
+              // 화면 새로고침
+              location.reload();
+
             }
-            
+
+          }).catch((error) => {
+            console.log(error);
+          })
+
+        } else {
+          // 일감 생성
+          apiIssue.postIssue(issue).then((response)=>{
+
+          if(response.status == 200){
+            alert('일감 등록에 성공하였습니다.');
+            this.IssuesListPage();
+          }else{
+            console.log(response);
+          }
+
 
           }).catch((e) => {
-            console.log(`ERROR:${e}`);
-        })
+          console.log(`ERROR:${e}`);
+          })
 
+        }
+      
       }else{
         // axios 500 에러 방지하기 위해 필수 입력값 미입력 시 alert
         return alert("필수값을 입력해주세요");
@@ -427,9 +482,16 @@ export default {
 
       // 필수값 모두 입력 시 result = true;
 
-      if((this.projectId != 0) && (this.trackerId != 0) && (this.statusId != 0) && (this.subject != "")  && (this.priorityId != 0)){
+      if((this.isseuDetailObj.projectId != 0) && (this.isseuDetailObj.trackerId != 0) && (this.isseuDetailObj.statusId != 0) && (this.isseuDetailObj.subject != "")  && (this.isseuDetailObj.priorityId != 0)){
 
         result = true;
+
+      }else{
+        console.log(this.isseuDetailObj.projectId);
+        console.log(this.isseuDetailObj.trackerId);
+        console.log(this.isseuDetailObj.statusId);
+        console.log(this.isseuDetailObj.subject);
+        console.log(this.isseuDetailObj.priorityId);
 
       };
 
@@ -443,6 +505,9 @@ export default {
       })
   
     },
+
+
+
 
     // 이전 페이지로 이동
     historyBackPage(){
@@ -468,7 +533,7 @@ export default {
 
           // assignedId가 0일 경우 500 에러 발생
           // 만약 담당자 지정을 하지 않을 경우 null로 초기화
-          value == 0 ? this.assignedId = null : this.assignedId = value
+          value == 0 ? this.isseuDetailObj.assignedId = null : this.isseuDetailObj.assignedId = event.target.value
 
         } break;
       }
@@ -558,11 +623,6 @@ export default {
 
 .col-sm-4 span{
   font-size: 12px;
-}
-
-
-.attachment-area {
-  margin-right: 10px;
 }
 
 .filebox input[type="file"] {
