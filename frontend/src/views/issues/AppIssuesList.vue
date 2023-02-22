@@ -41,8 +41,11 @@
                 </div>
                 <div>
                   <select class="form-control" id="sel1">
-                    <option>사용중</option>
-                    <option>삭제됨</option>
+                    <option v-for="(item,index) in StatusArray"
+                      :key="index"
+                      :value="item.value"
+                    > {{ item.name }}
+                    </option>
                   </select>
                 </div>
               </div>
@@ -64,9 +67,9 @@
 
 
 
-
+      <!--
       <vuetable ref="vuetable"
-          api-url="http://localhost:8080/test/issues.json"
+          api-url="http://localhost:8080/issue/issues.json"
           :fields="fields"
           @vuetable:row-dblclicked="onRowDoubleClicked"
           @vuetable:row-clicked="onRowClicked"
@@ -79,7 +82,7 @@
           >
 
           <div slot="test-slot" slot-scope="props">
-            <!--권한이 있는 사용자만 편집 버튼 (...) 조회 가능-->
+            권한이 있는 사용자만 편집 버튼 (...) 조회 가능
             <div v-if="isVisableEditBtn">
               <div class="btn" @click.prevent.stop="handleRowClick($event,props.rowData,1)">
                 <font-awesome-icon icon="fa-solid fa-ellipsis" />
@@ -89,7 +92,39 @@
 
             </div>
           </div>
-      </vuetable>
+      </vuetable>-->
+
+      <!--api_url 변경 시 vuetable의 api 경로 또한 변경해야함-->
+
+      <!-- :api-url = "`/issue/getIssues/page=${page}`" -->
+      <vuetable ref="vuetable"
+          :api-url = "`/issue/getIssues/test`"
+          :fields="fields"
+          @vuetable:row-dblclicked="onRowDoubleClicked"
+          data-path="issues"
+          pagination-path=""
+          class="table table-hover table-height"
+          @vuetable:pagination-data="onPaginationData"
+          @vuetable:loading="onLoading"        
+          @vuetable:loaded="onLoaded"
+          :key="deleteIssueComponent"
+          >
+
+          <div slot="test-slot" slot-scope="props">
+
+            <div v-if="isVisableEditBtn">
+              <div class="btn" @click.prevent.stop="handleRowClick($event,props.rowData,1)">
+                <font-awesome-icon icon="fa-solid fa-ellipsis" />
+              </div>
+            </div>
+            <div v-else>
+
+            </div>
+          </div>
+      </vuetable> 
+
+
+
 
       <!-- 페이징 영역 -->
       <vuetable-pagination 
@@ -132,13 +167,13 @@
 
 
 
-      <vue-simple-context-menu
+      <!-- <vue-simple-context-menu
           element-id="testMenu"
           :options="TestArray"
           ref="testContextMenu"
           @option-clicked="subStatusClicked($event,StatusItemArrayForAdmin)"
         >
-      </vue-simple-context-menu>
+      </vue-simple-context-menu> -->
 
 
     <!--메인 메뉴 끝--> 
@@ -154,7 +189,7 @@ import TheMainMenu from '../../components/TheMainMenu.vue';
 import FieldsDef from '../vueTableDef/IssueFiledsDef.js'
 
 // 테스트 중
-import Vuetable from 'vuetable-2'
+import Vuetable from '../../../node_modules/vuetable-2/src/components/Vuetable.vue'
 import VuetablePagination from '../../components/VuetablePagination.vue'
 import cssConfig from '../../VuetableCssConfig'
 
@@ -168,6 +203,7 @@ export default {
   components : {TheMainMenu, Vuetable, VuetablePagination} ,
   data() {
     return {
+
       // 필드 항목 관리를 위해 별도의 파일로 구분하였음 (issueFiledsDef.js)
       fields : FieldsDef,
       // isVisableEditBtn : true => 버튼 조회
@@ -175,7 +211,7 @@ export default {
       isVisableEditBtn: true,
       isDone : false,
       ClickedRowData : {},
-
+      deleteIssueComponent : 0, // Issue 삭제 후 vuetable 컴포넌트만 업데이트하기 위해 사용하는 key 값
       /**
        * 한계점 : 상위 context-menu에서 하위 context-menu를 갖도록 구현 필요
        * 현재는 각기 다른 context-menu를 호출하는 형식이기 때문에, 상위와 그에 따른 하위 항목들의 구분이 어려움
@@ -216,12 +252,9 @@ export default {
       ],
 
       StatusArray: [
-        {
-          name: '진행중'
-        },
-        {
-          name: '완료'
-        },
+        {name : "신규", value:  1 },
+        {name : "진행",  value: 2 },
+        {name : "완료",  value: 5 },
       ],
 
       /** 페이징 처리 관련
@@ -313,7 +346,20 @@ export default {
         }break;
 
         case '일감삭제' : {
-          alert(`일감이 삭제 되었습니다.`)
+          if(confirm(`일감을 삭제하시겠습니까?`)){
+
+              apiIssue.deleteIssue(`${this.ClickedRowData.id}`).then((response) => {
+                if(response.status == 200){
+
+                
+                  this.deleteIssueComponent++;
+
+                }
+              }).catch((error) => {
+                console.log(error);
+              })
+
+          }
          
           this.$refs?.secondContextMenu.hideContextMenu();
           this.$refs?.firstContextMenu.hideContextMenu();
@@ -381,55 +427,63 @@ export default {
 
       /*
       The pagination component assumes that the following information are available for its calculation
-      total -- the total number of records available
-      per_page -- the number of records in each page (page size)
-      current_page -- the current page number of this data chunk
-      last_page -- the last page number of this data
-      next_page_url -- URL of the next page
-      prev_page_url -- URL of the previous page
-      from -- the start record of this page, in relation to page size
-      to -- the end record of this page, in relation to page size
+      total -- 사용 가능한 총 레코드 수
+      per_page -- 각 페이지의 레코드 수(페이지 크기)
+      current_page -- 이 데이터 청크의 현재 페이지 번호
+      last_page -- 이 데이터의 마지막 페이지 번호
+      next_page_url -- 다음 페이지의 URL
+      prev_page_url -- 이전 페이지의 URL
+      from --  페이지 크기와 관련하여 이 페이지의 시작 레코드
+      to -- 페이지 크기와 관련하여 이 페이지의 끝 레코드
       */
 
-
-      // vuetable-pagination에서 필요하는 데이터 형식에 맞게 가공 필요 
-      // 테스트 코드
+      // vuetable-pagination에서 필요하는 데이터 형식에 맞게 가공
       let paginationData = {
       total : obj.total_count,
-      per_page : 25,
-      current_page : 1,
-      last_page : 1,
+      per_page : obj.limit,
+      current_page : obj.current_page,
+      last_page :  Math.ceil(obj.total_count / obj.limit) || 0,
       next_page_url: '/',
       prev_page_url: '/',
       from: 1,
-      to: 100
+      to:  10
       }
-       
-   
-      this.$refs.pagination.setPaginationData(paginationData)
-    },
 
+      //console.log(paginationData);
+    
+      this.$refs.pagination.setPaginationData(paginationData);
+
+    },
+    
+    /*
+    
+    totalPage-- 마지막 페이지 번호
+    isOnFirstPage-- 현재 페이지 번호가 첫 번째 페이지인지 여부
+    isOnLastPage-- 현재 페이지 번호가 마지막 페이지인지 여부
+    notEnoughPages-- 모든 페이지가 슬라이딩 윈도우 크기보다 작은지 여부.
+    windowSize-- 슬라이딩 페이지 매김 창의 크기. * 2 +1 로 계산됩니다 on-each-side.
+    windowStart-- 이 슬라이딩 페이지 매김 창의 첫 번째 페이지 번호입니다.
+
+    */
+
+    // 페이지바 클릭 시 해당 페이지 번호가 담김
     onChangePage (page) {
-      this.$refs.vuetable.changePage(page)
+      this.$refs.vuetable.changePage(page);
     },
 
-    // 테스트 중
-
-
-    // 테스트 종료
 
   },
 
 
 
-  // mounted(){
-  //   // 테스트 중
-  //   apiIssue.getIssues().then((response)=>{
-  //     console.log(response);
-  //   }).catch((e) => {
-  //     console.log(`ERROR:${e}`);
-  //   })
-  // }
+  mounted(){
+    // 테스트 중
+    // apiIssue.getIssues().then((response)=>{
+    //   console.log(response);
+    // }).catch((e) => {
+    //   console.log(`ERROR:${e}`);
+    // })
+  }
 }
 </script>
 

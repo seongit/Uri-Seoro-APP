@@ -432,7 +432,7 @@ export default {
           apiIssue.editIssue(this.$route.params.id, requestIssue).then((response) => {
 
             console.log(response.data);
-            if(response.data == '201 OK'){
+            if(response.status == 200){
               alert("정상적으로 일감 수정이 완료되었습니다.");
               
               // 다음과 같이하면 에러남

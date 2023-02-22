@@ -61,6 +61,14 @@ export default [
     name : "updated_on",
     title : "변경일시",
     width : "10%",
+    formatter (value) {
+     
+      let result = "";
+
+       result = value.replace(/\-/g,"/")
+      
+      return result;
+    }
   },
   {
     name : "test-slot",

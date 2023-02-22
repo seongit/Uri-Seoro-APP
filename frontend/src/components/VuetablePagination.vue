@@ -66,9 +66,11 @@
 
 <script>
 /* eslint-disable */
-import VuetablePaginationMixin from "vuetable-2/src/components/VuetablePaginationMixin";
+  //vuetable-2/src/components/VuetablePaginationMixin"
+import VuetablePaginationMixin from "../../node_modules/vuetable-2/src/components/VuetablePaginationMixin.vue";
+
 
 export default {
-  mixins: [VuetablePaginationMixin]
+  mixins: [VuetablePaginationMixin],
 };
 </script>
