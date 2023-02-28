@@ -15,6 +15,9 @@ export default new Vuex.Store({
     isLogin(state){
       return state.userInfo.username !== '';
     },
+    isAdmin(state){
+      return state.userInfo.adminYN == 'Y';
+    },
   },
   
 
