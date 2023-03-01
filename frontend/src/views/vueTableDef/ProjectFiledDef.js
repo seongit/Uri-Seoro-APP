@@ -1,11 +1,11 @@
 /*eslint-disable */
 export default [
   
-  {
-    name : "id",
-    title : "#",
-    width : "3%",
-  },
+  // {
+  //   name : "id",
+  //   title : "#",
+  //   width : "3%",
+  // },
   {
     name : "name",
     title : "프로젝트",

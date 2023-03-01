@@ -11,7 +11,7 @@
           </div>
         </div> 
 
-        <the-project-form></the-project-form>
+        <the-project-form :resObj="resObj"></the-project-form>
 
       </div>
     
@@ -30,6 +30,17 @@ import TheProjectForm from '@/components/TheProjectForm.vue';
 export default {
   components : {TheAdminSidebar,TheProjectForm},
 
+  data( ){
+    return {
+      resObj : {
+          name : "",
+          identifier : "",
+          description : "",
+          is_public : false,
+          is_public_checked : false,
+      },
+    }
+  },
 
   methods : {
     // 관리자 목록으로 이동

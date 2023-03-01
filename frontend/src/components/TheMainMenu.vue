@@ -8,7 +8,7 @@
 
         <!--메인 메뉴 제목-->
         <div class="custom-form">
-          <h1>{{ getPageTitle }}</h1>
+          <h1>{{ getPageTitle}}</h1>
         </div>
 
         <!--메인 메뉴 항목 -->
@@ -60,14 +60,22 @@
 </template>
 
 <script>
+
 /*eslint-disable */
 export default {
-
+  props : {
+    name : String
+  },
   computed : {
     getPageTitle() {
-      if(this.$route.params.id) return "프로젝트명"
-    	return "Redmine"
+      if(this.$route.params.id) {
+        return this.$props.name
+      }return "Redmine"
     }
+  },
+  methods : {
+
+
   }
 }
 </script>

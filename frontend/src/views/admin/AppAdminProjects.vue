@@ -238,7 +238,7 @@ export default {
 
           if(response.data == "200 OK"){
 
-            this.reloadUserComponent++;
+            this.reloadComponent++;
 
           }
 
