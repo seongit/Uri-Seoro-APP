@@ -7,7 +7,7 @@
           <h1 class="text-xs-center">{{ getPageTitle }}</h1>
           <form @submit.prevent="submitRegisterForm">
             <fieldset class="form-group">
-              <label for="username"><b>이름</b> *
+              <!-- <label for="username"><b>이름</b> *
                   <input
                     class="form-control form-control-lg border-radius"
                     id="username"
@@ -16,9 +16,10 @@
                     placeholder="이름 입력"
                   />
               </label>
-              <span v-if="msg.username">{{msg.username}}</span>
+              <span v-if="msg.username">{{msg.username}}</span> -->
             </fieldset>
-            <fieldset class="form-group">
+            <fieldset class="form-group row InputUserName-area"  >
+
               <label for="userfamilyName"><b>성</b> *
                   <input
                     class="form-control form-control-lg border-radius"
@@ -26,8 +27,21 @@
                     type="text"
                     v-model="userfamilyName"
                     placeholder="성 입력"
+                    maxlength="10"
                   />
               </label>
+
+              <label for="username"><b>이름</b> *
+                  <input
+                    class="form-control form-control-lg border-radius"
+                    id="username"
+                    type="text"
+                    v-model="username"
+                    placeholder="이름 입력"
+                    maxlength="20"
+                  />
+              </label>
+
               <span v-if="msg.username">{{msg.username}}</span>
             </fieldset>
             <fieldset class="form-group">
@@ -38,8 +52,9 @@
                     type="text"
                     v-model="loginID"
                     placeholder="ID 입력"
+                    maxlength="20"
                   />
-                  <span v-if="msg.email">{{msg.email}}</span>
+                  <span v-if="msg.loginID">{{msg.loginID}}</span>
               </label>
             </fieldset>
             <fieldset class="form-group">
@@ -47,7 +62,7 @@
                   <input
                     class="form-control form-control-lg border-radius"
                     id="email"
-                    type="email"
+                    type="text"
                     v-model="email"
                     placeholder="이메일 입력"
                   />
@@ -55,25 +70,47 @@
               </label>
             </fieldset>
             <fieldset class="form-group">
-              <label for="password"><b>비밀번호</b> *
+              <label v-if="isEditMode" for="password"><b>비밀번호</b> 
                   <input
                     class="form-control form-control-lg border-radius"
                     id="password"
                     type="password"
                     v-model="password"
                     placeholder="숫자,대문자,소문자를 조합하여 8자리 이상입력"
+                    maxlength="25"
+                  />
+              </label>
+              <label v-else for="password"><b>비밀번호</b> *
+                  <input
+                    class="form-control form-control-lg border-radius"
+                    id="password"
+                    type="password"
+                    v-model="password"
+                    placeholder="숫자,대문자,소문자를 조합하여 8자리 이상입력"
+                    maxlength="25"
                   />
               </label>
               <span v-if="msg.password">{{msg.password}}</span>
             </fieldset>
             <fieldset class="form-group">
-              <label for="check-password"><b>비밀번호 확인</b> *
+              <label v-if="isEditMode" for="check-password"><b>비밀번호 확인</b>
                   <input
                     class="form-control form-control-lg border-radius"
                     id="check-password"
                     type="password"
                     v-model="checkPassword"
                     placeholder="비밀번호 재입력"
+                    maxlength="25"
+                  />
+              </label>
+              <label v-else for="check-password"><b>비밀번호 확인</b>  *
+                  <input
+                    class="form-control form-control-lg border-radius"
+                    id="check-password"
+                    type="password"
+                    v-model="checkPassword"
+                    placeholder="비밀번호 재입력"
+                    maxlength="25"
                   />
               </label>
               <span v-if="msg.checkPassword">{{msg.checkPassword}}</span>
@@ -83,18 +120,19 @@
               <div class="userDetailInfo border-radius">
                 <div class="userDetailInfo-area">
                   <b>사용자 세부 정보</b>
-                  <!--추후 해당 데이터가 DB에 담길 수 있도록 추가 개발 필요-->
-                  <!--23.01.15 화면단만 구현하였음-->
                   <ul class="list-unstyled">
-                    <input type="checkbox" id="completeAgreement" value="completeAgreement" v-model="allSelected">
-                    <label for="completeAgreement">전체 선택</label>
+                    <!--전체 선택일 경우 모든 데이터의 값이 세팅되도록 설정할 필요있음 -->
+                    <!-- <input type="checkbox" id="completeAgreement" value="completeAgreement" v-model="allSelected">
+                    <label for="completeAgreement">전체 선택</label> -->
                     <li v-for="(item,index) in checkList">
                       <input type="checkbox"
-                        :id="index"
+                        :id="`option${index}`"
                         :value="item"
                         v-model="detailArr"
-                        :key="index">
-                        <label :for="item" :key="index + '1'">{{ item }}</label>
+                        :key="index"
+                        @click="setAdminTrueOrFalse()"
+                      >
+                        <label :for="index" :key="index + '1'">{{ item }}</label>
                     </li>
                   </ul>
                 </div>
@@ -122,6 +160,8 @@
 /* eslint-disable */
 
 import TheAdminSidebar from '@/components/TheAdminSidebar.vue';
+import apiUser from '../../api/user';
+import user from '../../api/user';
 
 export default {
   components : {TheAdminSidebar},
@@ -134,36 +174,214 @@ export default {
       email: '',
       password: '',
       checkPassword: '',
+      isAdmin : false,
       msg : [],
-      checkList : ["관리자입니다.","다음 로그인 시 암호를 변경합니다."],
+      checkList : ["관리자 입니다."],
       detailArr : [],
 
     };
   },
 
+  mounted(){
+
+    // 사용자 상세 정보 조회
+    if(this.$route.params.id > 0){
+      this.getUserDetail();
+    }
+ 
+
+    
+
+  },
+
+  watch: {
+
+    loginID(value){
+      this.loginID = value;
+      this.validateLoginId(value);
+    },
+
+    email(value){
+      this.email = value;
+      this.validateEmail(value);
+    },
+
+    password(value) {
+      this.password = value;
+      this.validatePassword(value);
+    },
+
+    checkPassword(value) {
+      this.checkPassword = value;
+      this.validateCheckPassword(value);
+    },
+
+
+    userfamilyName(value) {
+      this.userfamilyName = value;
+      this.validateName(value);
+    },
+
+    username(value) {
+      this.username = value;
+      this.validateName(value);
+    },
+
+
+},
+
+
   // validation 필요 - vue- validation 사용 예정
-  
 
   methods: {
+
+
+
+    // 체크박스 선택시 값 세팅
+    setAdminTrueOrFalse(){
+
+      if(this.isAdmin == true) {
+        this.isAdmin = false;
+      }else if(this.isAdmin == false){
+        this.isAdmin = true;
+      }
+
+    },
+
+    // 사용자 상세 조회
+    async getUserDetail(){
+
+      apiUser.getUserDetail(this.$route.params.id).then((response) => {
+      console.log(response);
+
+      console.log(response.data.user);
+
+
+      let resObj = response.data.user
+
+      this.username = resObj.firstname;
+      this.userfamilyName = resObj.lastname;
+      this.loginID = resObj.login;
+      this.email = resObj.mail;
+
+      if(resObj.admin == true){
+        // check box 선택하기 선택 
+        this.detailArr = true;
+        this.isAdmin = true;
+
+        // system admin의 경우 관리자 권한 해제 불가
+        if(resObj.id == 1){
+          let checkboxSystemAdmin = document.getElementById('option0');
+          checkboxSystemAdmin.setAttribute("disabled",true);
+        }
+       
+      }
+
+      }).catch((error) => {
+        console.log(error);
+      })
+
+    },
+
 
     // 회원가입 폼 등록 
     async submitRegisterForm() {
 
-      // AppRegister.vue를 참고
+      // 관리자 여부 확인
+      const user = {
+        firstname : this.username,
+        lastname : this.userfamilyName,
+        login : this.loginID,
+        mail : this.email,
+        password : this.password,
+        admin : this.isAdmin  
 
-      // 로그인 페이지로 이동
-      this.$router.push({
+      }
+
+      // 사용자 정보 수정 
+      if(this.$route.params.id)	{
+
+        let requestUser = {
+          user
+        }
+
+        apiUser.editUser(this.$route.params.id, requestUser).then((response) => {
+
+          if(response.data == "201 OK"){
+            this.editSuccess();
+          }
+
+
+        }).catch((error) => {
+          console.log(error);
+
+          let returnmsg = error.response.data.message;
+
+          alert(`${returnmsg}`)
+
+        })
+
+
+      
+      }else{ 
+
+
+        await apiUser.registerUser(user)
+        .then((response) => {
+
+          console.log(response);
+
+          if(response.status == 200){
+            this.registerSuccess(response.data);
+          }
+        
+
+        }).catch((error) => {
+
+          let returnmsg = error.response.data.message;
+
+          alert(`${returnmsg}`)
+
+        })
+
+      }
+
+
+
+    
+
+    },
+
+    // 사용자 등록 완료 
+    registerSuccess(userData){
+
+      let fullname = userData.user.lastname + userData.user.firstname;
+
+      alert(`${fullname}님을 등록하였습니다.`);
+
+      // 폼 초기화
+      this.initForm();
+
+      // 사용자 전체 목록 페이지로 이동
+        this.$router.push({
         path : '/users'
       })
 
     },
 
-    // 사용자 등록 완료 
-    // registerSuccess(){
-    //   // 폼 초기화
-    //   this.initForm();
+    // 사용자 정보 수정 완료
+    editSuccess(){
+       // 폼 초기화
+       this.initForm();
 
-    // },
+       alert(`사용자 정보가 정상적으로 수정되었습니다.`)
+
+      // 사용자 전체 목록 페이지로 이동
+        this.$router.push({
+        path : '/users'
+      })
+
+    },
 
     // 입력 폼 초기화 
     initForm() {
@@ -173,11 +391,33 @@ export default {
       this.email = '';
       this.password = '';
       this.checkPassword = '';
+      this.isAdmin = false;
     },
+
+
+     // loginID 유효성 검사 
+     validateLoginId(value) {
+
+      //특수문자 / 문자 / 숫자 포함 형태의 5,20자리 이내의 아이디 정규식
+
+      let regExp = /^(?=.*[a-zA-Z])[-a-zA-Z0-9_.]{5,20}$/;
+
+      if (regExp.test(value) || value.length == 0)
+        {
+          this.msg['loginID'] = '';
+        } else{
+          this.msg['loginID'] = '유효하지 않은 아이디 입니다.';
+        } 
+    },
+
 
     // email 유효성 검사 
     validateEmail(value) {
-      if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value))
+
+      let regExp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+
+      if (regExp.test(value) || value.length == 0)
         {
           this.msg['email'] = '';
         } else{
@@ -188,7 +428,9 @@ export default {
     // 비밀번호 유효성 검사 
     validatePassword(value) {
 
-      if(/^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/.test(value)){
+      let regExp = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/
+
+      if(regExp.test(value) || value.length == 0){
         this.msg['password'] = '';
       }else{
         this.msg['password'] = '유효하지 않은 비밀번호입니다.'
@@ -198,7 +440,10 @@ export default {
 
     // 비밀번호 재확인 유효성 검사
     validateCheckPassword(value) {
-      if(/^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/.test(value)){
+
+      let regExp = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/
+
+      if(regExp.test(value) || value.length == 0){
         this.msg['checkPassword'] = '';
         // 재입력 비밀번호와 비밀번호가 불일치할 경우 
         if(this.password !== this.checkPassword) {
@@ -207,18 +452,23 @@ export default {
       }else{
         this.msg['checkPassword'] = '유효하지 않은 비밀번호입니다.'
       }
+
     },
 
     // 이름 유효성 검사
     validateName(value){
 
-      // 한글과 영문만 가능
-      if(/^[가-힣a-zA-Z]*$/.test(value)){
-        this.msg['username'] = '';
+      let regExp = /^[가-힣a-zA-Z]*$/
 
+      // 한글과 영문만 가능
+      if(regExp.test(value)){
+        this.msg['username'] = '';
+        this.msg['userfamilyName'] = '';
       }else{
         this.msg['username'] = '유효하지 않은 이름입니다.'
+        this.msg['userfamilyName'] = '유효하지 않은 이름입니다.';
       }
+
     },
 
   },
@@ -257,13 +507,46 @@ export default {
     // retrun boolean
     // default -> true (비활성화) / false (활성화)
     isFormEmpty(){
-      // 추후 리팩토링 필요 
-      if(this.email && this.password && this.checkPassword && this.username && this.allSelected){
-        return false
-      }else 
-      return false;
-      //return true; //테스르를 위해 주석 하였음 
-    
+
+      // 사용자 정보 수정의 경우 비밀번호는 필수 입력값 아님
+      if(this.$route.params.id){
+
+          // 추후 리팩토링 필요 
+          // 필수 입력 값이 모두 기입되고, validation 검증 또한 완료하였을 때 사용자 등록버튼 활성화
+          if(this.loginID && this.email && this.username && this.userfamilyName ){
+            
+            let validateAll =  
+            this.msg['loginID'] + this.msg['email'] + this.msg['username'] +  this.msg['userfamilyName'];
+
+            return validateAll.length > 0 ? true : false;
+
+          }else return true;  
+        
+      }else {
+
+          // 추후 리팩토링 필요 
+          // 필수 입력 값이 모두 기입되고, validation 검증 또한 완료하였을 때 사용자 등록버튼 활성화
+          if(this.loginID && this.email && this.password && this.checkPassword && this.username && this.userfamilyName ){
+            
+            let validateAll =  
+            this.msg['loginID'] + this.msg['email'] + this.msg['password'] + this.msg['checkPassword'] 
+              + this.msg['username'] +  this.msg['userfamilyName'];
+
+            return validateAll.length > 0 ? true : false;
+          }else return true;  
+        
+      }
+
+      
+   
+    },
+
+
+    // 비밀번호 필수값 화면단 제어 
+    // 사용자 정보 수정하기일 경우 비밀번호 변경은 필수 값이 아님 
+    isEditMode(){
+      let userId = this.$route.params.id;
+      return userId !='undefined' && userId > 0 ? true : false; 
     },
 
   }
@@ -273,6 +556,12 @@ export default {
 </script>
 
 <style scoped>
+
+  .InputUserName-area {
+    margin-left: 0px;
+    justify-content: space-between;
+  }
+
   label {
     display:inline;
   }

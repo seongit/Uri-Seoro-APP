@@ -27,7 +27,7 @@
                   <b>검색 조건</b> 
                   <br>
                   <div class="row" >
-                    <div class="col-sm-3 searchUser">
+                    <!-- <div class="col-sm-3 searchUser">
                       <div>
                         <label for="sel1">상태</label>
                       </div>
@@ -37,30 +37,36 @@
                           <option>삭제됨</option>
                       </select>
                       </div>
-                    </div>
-                    <div class="col-sm-6 searchUser">
-                      <div>       <label for="">사용자 ID</label></div>
+                    </div> -->
+                    <div class="col-sm-7 searchUser">
+                      <div> <label for="">사용자</label></div>
                       <div>  
                         <input
                                 class="form-control border-radius"
-                                type="text"                         
+                                type="text"
+                                style="width:150%"
+                                @change="setTmpSearchWord($event)"                      
                               />
                       </div>
                     </div>
+                    <!--추후 리팩토링 필요, 검색 아이콘을 우측으로 놓기 위해 비어있는 div 생성하였음-->
+                    <div class="col-sm-2">
+                    </div>
                     <div class="col-sm-3">
-                        <div class="btn searchBtn"> 
+                
                           <!--사용자 검색 버튼 -->
-                          <router-link :to="{name:''}">
+                          <div class="btn searchBtn"  @click="setSearchWord(tmpSearchWord)"> 
+                            <!--검색 버튼 -->
                             <img src="../../../public/images/searchBtn.png" >
-                          </router-link>
-                        </div>
+                          </div>
+                    
                     </div>
                   </div>
                 </div>
               </div>
           </fieldset>
 
-          <!--사용자 리스트 -->
+          <!--사용자 리스트
           <table class="table table-hover">
               <thead>
               <tr>
@@ -74,7 +80,6 @@
               </tr>
               </thead>
               <tbody>
-                  <!-- eslint-disable-->
                   <tr @click="rowClicked(1)">
                       <td >
                           admin
@@ -82,41 +87,52 @@
                       <td>Redmine</td>
                       <td>admin</td>
                       <td>admin@okestro.com</td>
-                      <!--관리자 여부 아이콘으로 표시-->
                       <td>     
                         <font-awesome-icon icon="fa-solid fa-check"></font-awesome-icon>     
                       </td>
                       <td>2023/01/24 10:03</td>
-                      <!--사용자 계정 관리 버튼-->
                       <td>
-                        <!-- 사용자 계정 잠금 구현 필요
-                        <div class="btn btn-sm">
-                          <router-link :to="{}">
-                            <img src="../../../public/images/lock.png">
-                          </router-link>
-                        </div>
-                        -->
-                        <!--사용자 삭제 -->
                         <router-link :to="{name:'userDelete'}">
                             <font-awesome-icon icon="fa-solid fa-trash" />
                         </router-link>
                       </td>
                   </tr>
               </tbody>
-          </table>
+          </table> -->
 
-          <!--페이징 처리 구현 필요-->
-          <div style="display:flex">
-              <div style="margin:auto">
-                  <ul class="pagination">
-                      <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                      <li class="page-item"><a class="page-link" href="#">1</a></li>
-                      <li class="page-item active"><a class="page-link" href="#">2</a></li>
-                      <li class="page-item"><a class="page-link" href="#">3</a></li>
-                      <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                  </ul>  
-              </div>
+      <vuetable ref="vuetable" 
+          :api-url = "this.setURLPath()"
+          :fields="fields"
+          data-path="users"
+          pagination-path=""
+          class="table table-hover table-height"
+          @vuetable:pagination-data="onPaginationData"
+          @vuetable:row-dblclicked="onRowDoubleClicked"
+          :key = "reloadUserComponent"
+          >
+
+          <div slot="test-slot" slot-scope="props">
+            <!--system admin일 경우 휴지통 아이콘이 보이지 않음-->
+            <div v-if="props.rowData.id === 1">
+            </div>
+            <!--그 외의 경우 휴 아이콘 보여짐-->
+            <div v-else class="btn" @click.prevent.stop="handleRowClick($event, props.rowData, userPermission )">
+                <font-awesome-icon icon="fa-solid fa-trash" />
+            </div>
           </div>
+
+      </vuetable> 
+
+
+
+        <!-- 페이징 영역 -->
+        <vuetable-pagination 
+        ref="pagination"
+        :css="css.pagination"
+        class="row"
+        @vuetable-pagination:change-page="onChangePage"
+        >
+        </vuetable-pagination>
 
       </div>
       
@@ -133,25 +149,169 @@
 <script>
 /* eslint-disable */
 import TheAdminSidebar from '@/components/TheAdminSidebar.vue';
+import FieldsDef from '../vueTableDef/UsersFiledsDef.js'
+
+import Vuetable from '../../../node_modules/vuetable-2/src/components/Vuetable.vue'
+import VuetablePagination from '../../components/VuetablePagination.vue'
+import cssConfig from '../../VuetableCssConfig'
+
+import apiUser from '../../api/user.js';
+import { faL } from '@fortawesome/free-solid-svg-icons';
 
 export default {
-  components : {TheAdminSidebar},
+  components : {TheAdminSidebar,Vuetable,VuetablePagination},
+ 
+  data(){
+    return {
+
+      /** 페이징 처리 관련
+       *  cssConfig : 페이징 처리 관련 css를 config 파일로 정의하였음
+       */
+      css : cssConfig, 
+      // 필드 항목 관리를 위해 별도의 파일로 구분하였음
+      fields : FieldsDef,
+      userPermission : 1, // 사용자 권한
+      ClickedRowData : {},
+      reloadUserComponent : 0, 
+      tmpSearchWord : '',   
+      enteredSearchWord : '',
+
+    }
+  },
+
+  computed : {
+
+  },
+
   methods : {
+
+    isSystemAdmin(item){
+     if(item.id == 1) {
+        return true;
+     }
+     return false;
+    },
 
     createUser(){
       this.$router.push({
         path: '/users/new'
       })
-
     },
+
     rowClicked(rowId){
       // 상세 페이지로 이동
       this.$router.push({
           path : `/users/${rowId}/edit`
       })
     },
+
+    setURLPath(){
+
+      let str = "/user/getUsers?";
+
+      if(this.enteredSearchWord != ''){
+        str += "searchWord=" + this.enteredSearchWord ; 
+      }else{
+        str += "searchWord=" ; 
+      }
+
+
+      return str
+    },
+
+    /**
+     * 검색 조건 입력 후 change Event가 발생하면 tmpSearchWord 변수에 해당 값이 담김
+     * @param {*} event 
+     */
+    setTmpSearchWord(event){
+      this.tmpSearchWord = event.target.value
+    },
+
+    /**
+     * 검색 버튼 클릭 시, enteredSearchWord 변수에 tmpSearWord의 값이 담김
+     * @param {*} param 
+     */
+    setSearchWord(param){
+      this.enteredSearchWord = param;
+    },
+
+
+    /**
+     * 전체 목록 그리드 더블 클릭시 호출되는 메소드
+     * @param {*} dataItem 
+     */
+     onRowDoubleClicked(dataItem){
+      this.$router.push({
+        path:`/users/${dataItem.data.id}/edit`
+      })
+    },
+
+
+    // 편집 아이콘 클릭 시 호출되는 메소드
+    handleRowClick(event, rowData, userPermission) {
+      // rowData 담아줌
+      this.ClickedRowData = rowData;
+      // context menu 팝업 출력됨
+
+      // 사용자 권한별로 조회되는 context 항목 상이함
+      // 1 == 관리자
+      // 2 == 일감을 할당 받은 개발자 (본인 일감만 편집 가능)
+
+     
+      if(confirm('사용자를 삭제하시겠습니까?')){
+
+        apiUser.deleteUser(this.ClickedRowData.id).then((response) => {
+          console.log(response);
+
+          if(response.data == "200 OK"){
+
+            this.reloadUserComponent++;
+
+          }
+
+        }).catch((error) => {
+          console.log(error);
+        })
+      }
+
+    },
+
+
+
+    /**
+     * 페이징 처리 관련
+     */
+
+    // 화면 로딩 시, 페이징 처리 데이터를 세팅하는 메소드 
+    onPaginationData(obj){
     
+      // vuetable-pagination에서 필요하는 데이터 형식에 맞게 가공
+      let paginationData = {
+      total : obj.total_count,
+      per_page : obj.limit,
+      current_page : obj.current_page,
+      last_page :  Math.ceil(obj.total_count / obj.limit) || 0,
+      next_page_url: '/',
+      prev_page_url: '/',
+      from: 1,
+      to:  10
+      }
+
+      //console.log(paginationData);
+
+      this.$refs.pagination.setPaginationData(paginationData);
+
+    },
+
+    // 페이지바 클릭 시 해당 페이지 번호가 담김
+    onChangePage (page) {
+      this.$refs.vuetable.changePage(page);
+    },
+
+
+  // 메서드 속성 종료
   },
+
 }
 
 
