@@ -9,10 +9,10 @@ module.exports = defineConfig({
    devServer: {
      //proxy: 'http://localhost:8081' // api 서버 포트 번호로 지정
      proxy: {
-      '/':{
-          target : process.env.VUE_API_URL, // 레드마인 api 주소 및 포트
+      '/user*':{
+          target : 'http://100.0.0.157:10180', // 레드마인 api 주소 및 포트
           changeOrigin:true,  
-          ws:false
+          ws : false
       }
   }
   },
