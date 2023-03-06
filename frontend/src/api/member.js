@@ -1,6 +1,8 @@
 /* eslint-disable */
 import axios from 'axios';
 
+axios.defaults.baseURL = process.env.VUE_API_URL 
+
 export default {
 
   // 구성원 전체 목록 조회

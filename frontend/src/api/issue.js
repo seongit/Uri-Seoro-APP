@@ -1,7 +1,8 @@
 /* eslint-disable */
 import axios from 'axios';
 
-// 테스트 
+axios.defaults.baseURL = process.env.VUE_API_URL 
+
 export default {
     getIssues: function () {
 
