@@ -1,7 +1,7 @@
 /* eslint-disable */
 import axios from 'axios';
 // axios.defaults.withCredentials = true;
-axios.defaults.baseURL = process.env.VUE_API_URL 
+// axios.defaults.baseURL = process.env.VUE_API_URL 
 // 'http://100.0.0.157:10180';
 
 // axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
