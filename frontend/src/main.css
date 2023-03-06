@@ -163,17 +163,35 @@ svg, a {
   text-decoration: none;
 }
 
-.badge-status-open {
-  color : #205D86;
-  border : 1px solid #205D86;
+.badge-status-open , .badge-priority-low, .badge-repoter{
+  color : #FFA000;
+  border : 1px solid #FFA000;
 }
 
-.badge-status-closed {
-  color: #1D781D;
-  border: 1px solid #1D781D;
+.badge-status-progressing , .badge-priority-mid, .badge-dev{
+  color: #3C7DC4;
+  border: 1px solid #3C7DC4;
 }
 
+.badge-status-closed, .badge-admin{
+  color: #008000;
+  border: 1px solid #008000;
+}
 
+ .badge-priority-high{
+  color: #DE3C3C;
+  border: 1px solid #DE3C3C;
+}
+
+.badge-priority-top {
+  color:  #c00000;
+  border: 1px solid #c00000;
+}
+
+/* 첨부파일 관련 */
+.attachment-area {
+  margin-right: 10px;
+}
 
 /* 페이징 처리 관련 css */
 

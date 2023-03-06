@@ -33,7 +33,7 @@
               <div class="btn" @click="editBtnClick()">
                 <font-awesome-icon icon="fa-solid fa-pen" /> 편집
               </div>
-              <div class="btn" @click="delIssue()">
+              <div class="btn" @click.prevent.stop="handleRowClick(props.rowData)">
                 <font-awesome-icon icon="fa-solid fa-trash" /> 삭제
               </div>
             </div>
@@ -68,6 +68,9 @@ import Vuetable from "../../../node_modules/vuetable-2/src/components/Vuetable.v
 import VuetablePagination from "../../components/VuetablePagination.vue";
 import cssConfig from "../../VuetableCssConfig";
 
+// api 호출
+import apiMember from "../../api/member.js";
+
 export default {
   components: {
     TheMainMenu,
@@ -82,11 +85,32 @@ export default {
       css: cssConfig,
       fields: FieldsDef,
       reloadComponent: 0,
+      ClickedRowData: {},
     };
   },
   methods: {
     increaseReloadComponent() {
       this.reloadComponent++;
+    },
+
+    // 삭제 아이콘 클릭 시 호출되는 메소드
+    handleRowClick(rowData) {
+      // rowData 담아줌
+      this.ClickedRowData = rowData;
+      if (confirm("구성원을 삭제하시겠습니까?")) {
+        apiMember
+          .deleteMember(this.ClickedRowData.id)
+          .then((response) => {
+            console.log(response);
+
+            if (response.data == "200 OK") {
+              this.reloadComponent++;
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     },
 
     setURLPath() {
@@ -101,8 +125,8 @@ export default {
       this.isVisable == false ? (this.isVisable = true) : (this.isVisable = false);
     },
     // 삭제 버튼 클릭시 alert로 확인함
-    delIssue() {
-      window.alert("삭제하시겠습니까?");
+    deleteMember(id) {
+      console.log(`id====>${id}`);
     },
 
     createMembersClick() {
@@ -153,32 +177,6 @@ export default {
       this.$router.push({
         path: `/projects/${dataItem.data.id}/settings`,
       });
-    },
-
-    // 편집 아이콘 클릭 시 호출되는 메소드
-    handleRowClick(event, rowData, userPermission) {
-      // rowData 담아줌
-      this.ClickedRowData = rowData;
-      // context menu 팝업 출력됨
-
-      // 사용자 권한별로 조회되는 context 항목 상이함
-      // 1 == 관리자
-      // 2 == 일감을 할당 받은 개발자 (본인 일감만 편집 가능)
-
-      if (confirm("프로젝트를 삭제하시겠습니까?")) {
-        apiProject
-          .deleteProject(this.ClickedRowData.id)
-          .then((response) => {
-            console.log(response);
-
-            if (response.data == "200 OK") {
-              this.reloadComponent++;
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
     },
   },
 };

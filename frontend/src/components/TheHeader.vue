@@ -18,7 +18,7 @@
                 </router-link>
             </li>
             -->
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <router-link
                     class="nav-link"
                     active-class="active"
@@ -27,7 +27,7 @@
                 >
                  게시판
                 </router-link>
-            </li>
+            </li> -->
             <!-- 추후 구현 예정
             <li class="nav-item">
                 <router-link
@@ -40,7 +40,16 @@
                 </router-link>
             </li>
              -->
-            
+             <li v-if="isUserLogin" class="nav-item">
+                <router-link
+                    class="nav-link"
+                    active-class="active"
+                    exact
+                    :to="{ name: 'myPage' }"
+                >
+                 내 페이지
+                </router-link>
+            </li>
              <li class="nav-item">
                 <router-link
                     class="nav-link"
@@ -52,7 +61,7 @@
                 </router-link>
             </li>
              <!--todo : 관리자로 로그인한 경우에만 관리 페이지 보여질 것-->
-            <li class="nav-item">
+            <li v-if="isAdmin" class="nav-item">
                 <router-link
                     class="nav-link"
                     active-class="active"
@@ -65,22 +74,45 @@
         </ul>
         <ul class="nav navbar-nav pull-xs-right">
             <li class="nav-item">
-                <div v-if="isUserLogin">{{ $store.state.userInfo.username }}</div>
-                <div v-else>                     
+                <div v-if="isUserLogin">
+               
                     <router-link
+                    class="nav-link"
+                    active-class="active"
+                    exact
+                    :to="{ name: '' }"
+                      >
+                      {{ $store.state.userInfo.login }}
+                    </router-link>
+                </div>
+                <div v-else>                     
+                    <!-- <router-link
                     class="nav-link"
                     active-class="active"
                     exact
                     :to="{ name: 'login' }"
                       >
                     로그인
-                </router-link>
+                    </router-link> -->
+                    <router-link
+                    class="nav-link"
+                    active-class="active"
+                    exact
+                    :to="{ name: 'redminLogin' }"
+                      >
+                        로그인
+                    </router-link>
                 </div>
 
-            </li>   
+            </li>  
             <li class="nav-item">
                 <div v-if="isUserLogin">
-                    <div @click="logoutUser">로그아웃</div>
+                    <a
+                    class="nav-link"
+                    @click="logoutUser"
+                    >
+                        로그아웃
+                    </a>
                 </div>
                 <div v-else>
                     <router-link
@@ -112,6 +144,10 @@ export default {
         //  $store의 isLogin true => 현재 로그인 중 
         isUserLogin() {
             return this.$store.getters.isLogin;
+        },
+
+        isAdmin() {
+            return this.$store.getters.isAdmin;
         },
 
     },

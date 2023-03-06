@@ -161,13 +161,11 @@ export default {
 
           //  console.log(e);
           //  console.log(e.response);
-            if(e.response.data.status == "500"){
-              // response는 200으로 주는게 좋음 -> 추후 개발 필요 
-              // 클라이언트에서는 어떤 에러가 발생하였는지 모르는 게 해야함 
-              return alert(`회원가입에 실패했습니다.`);
-            }else{
-              console.log(e.response.data)
-            }
+
+        // response는 200으로 주는게 좋음 -> 추후 개발 필요 
+        // 클라이언트에서는 어떤 에러가 발생하였는지 모르는 게 해야함 
+        return alert(`${e.response.data.message}`);
+    
         })
 
     },

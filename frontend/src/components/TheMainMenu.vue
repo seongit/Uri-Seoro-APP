@@ -2,96 +2,118 @@
   <!--eslint-disable-->
   <!--메인 메뉴입니다.-->
   <!--전체 div -->
-  <div> 
+  <div>
     <nav class="navbar navbar-light">
       <div class="container">
-
         <!--메인 메뉴 제목-->
         <div class="custom-form">
-          <h1>{{ getPageTitle}}</h1>
+          <h1>{{ getPageTitle }}</h1>
         </div>
 
         <!--메인 메뉴 항목 -->
         <div id="menu-item">
           <ul class="nav navbar-nav">
-
             <!--프로젝트 전체 목록 페이지-->
-            <li class="nav-item ">
+            <li class="nav-item">
               <router-link
-                  class="nav-link selected"
-                  active-class="active"
-                  exact
-                  :to="{ name: 'projects' }"
+                class="nav-link selected"
+                active-class="active"
+                exact
+                :to="{ name: 'projects' }"
               >
                 프로젝트
-                </router-link>
+              </router-link>
             </li>
 
             <!--일감 전체 목록 페이지-->
-            <li class="nav-item">
-                <router-link
-                    class="nav-link"
-                    active-class="active"
-                    exact
-                    :to="{ name: 'issues' }"
-                >
-                  일감
-                </router-link>
+            <li v-if="isGetAllIssues" class="nav-item">
+              <router-link class="nav-link" active-class="active" exact :to="{ name: 'issues' }">
+                일감
+              </router-link>
+            </li>
+            <!--프로젝트 해당하는 일감 조회-->
+            <li v-if="isGetSelectedIssue" class="nav-item">
+              <!-- <a class="nav-link" @click="onClickedIssueBtn(projectIdFromRouteParams)">일감</a> -->
+              <router-link
+                class="nav-link"
+                active-class="active"
+                exact
+                :to="{ name: 'projectIssues' }"
+              >
+                일감
+              </router-link>
             </li>
 
             <!--관리자만 해당 항목 보이도록 구현 필요-->
             <li class="nav-item">
-                <router-link
-                    class="nav-link"
-                    active-class="active"
-                    exact
-                    :to="{ name: 'projectEdit' }"
-                >
-                  설정
-                </router-link>
+              <router-link
+                class="nav-link"
+                active-class="active"
+                exact
+                :to="{ name: 'projectEdit' }"
+              >
+                설정
+              </router-link>
             </li>
-
           </ul>
         </div>
-  
       </div>
     </nav>
   </div>
 </template>
 
 <script>
-
 /*eslint-disable */
 export default {
-  props : {
-    name : String
+  props: {
+    name: String,
   },
-  computed : {
-    getPageTitle() {
-      if(this.$route.params.id) {
-        return this.$props.name
-      }return "Redmine"
+  data() {
+    return {
+      projectName: "",
+      projectIdFromRouteParams: 0,
+      isGetAllIssues: true,
+      isGetSelectedIssue: false,
+    };
+  },
+
+  mounted() {
+    if (this.projectIdFromRouteParams) {
+      this.isGetSelectedIssue = true;
+      this.isGetAllIssues = false;
     }
   },
-  methods : {
 
-
-  }
-}
+  computed: {
+    getPageTitle() {
+      if (this.$route.params.id) {
+        console.log(`2====>${this.$route.params.id}`);
+        this.projectName = this.$props.name;
+        this.projectIdFromRouteParams = this.$route.params.id;
+        return this.projectName;
+      }
+      return "Redmine";
+    },
+  },
+  methods: {
+    onClickedIssueBtn(id) {
+      console.log("id=====>" + id);
+    },
+  },
+};
 </script>
 
 <style>
-
 #menu-item {
   height: 32px;
-  background: #F3F3F3;
+  background: #f3f3f3;
   padding-left: 3px;
 }
 
 #menu-item li a.selected {
   background: white;
   border-radius: 12%;
-  color : #555;
+  color: #555;
   font-weight: bold;
 }
 
@@ -102,6 +124,4 @@ export default {
 #menu-item li a {
   text-align: center;
 }
-
-
 </style>

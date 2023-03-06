@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "dev": "vue-cli-service serve --mode development"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
@@ -15,11 +16,21 @@
     "@fortawesome/vue-fontawesome": "^2.0.10",
     "@toast-ui/vue-editor": "^3.2.2",
     "axios": "^1.2.2",
+    "axios-redmine": "^0.1.26",
+    "bootstrap": "^5.2.3",
+    "bootstrap-vue": "^2.23.1",
     "core-js": "^3.8.3",
-    "vue": "^2.6.14",
+    "http-proxy-middleware": "^2.0.6",
+    "https-browserify": "^1.0.0",
+    "url": "^0.11.0",
+    "v-calendar": "^2.4.1",
+    "vue": "^2.7.14",
+    "vue-js-modal": "^2.0.1",
     "vue-router": "^3.5.1",
     "vue-session": "^1.0.0",
     "vue-simple-context-menu": "^v3.4.2",
+    "vue2-datepicker": "^3.11.1",
+    "vuetable-2": "^2.0.0-beta.4",
     "vuex": "^3.6.2"
   },
   "devDependencies": {

@@ -70,20 +70,38 @@ export default {
     },
   },
   mounted() {
-    apiProject
-      .getAllProjects()
-      .then((response) => {
-        this.projectsArr = response.data.projects;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    // 로그인하지 않을 경울 public
+    if (this.getPublicProjects()) {
+      apiProject
+        .getAllProjects()
+        .then((response) => {
+          this.projectsArr = response.data.projects;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      let str = "isPublic=true";
+
+      apiProject
+        .getAllProjects(str)
+        .then((response) => {
+          this.projectsArr = response.data.projects;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   },
   methods: {
     projectDetailPage(id) {
       this.$router.push({
         path: `/projects/${id}`,
       });
+    },
+
+    getPublicProjects() {
+      return this.$store.getters.isLogin;
     },
   },
 };

@@ -9,8 +9,9 @@ export default {
 
 
   // 사용자 전체 목록 조회
+  // 페이징 처리 필요
   getAllUsers(){
-    return axios.get(`/user/getUsers?page=1&searchWord=`)
+    return axios.get(`/user/getUsers?page=&searchWord=`)
   },
   
   // 사용자 생성

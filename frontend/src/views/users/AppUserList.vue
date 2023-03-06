@@ -115,7 +115,7 @@
             <!--system admin일 경우 휴지통 아이콘이 보이지 않음-->
             <div v-if="props.rowData.id === 1">
             </div>
-            <!--그 외의 경우 휴 아이콘 보여짐-->
+            <!--그 외의 경우 휴지통 아이콘 보여짐-->
             <div v-else class="btn" @click.prevent.stop="handleRowClick($event, props.rowData, userPermission )">
                 <font-awesome-icon icon="fa-solid fa-trash" />
             </div>

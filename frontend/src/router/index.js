@@ -3,7 +3,6 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 
-
 Vue.use(VueRouter);
 
 const routes = [
@@ -28,7 +27,7 @@ const routes = [
   {
     path: '/redminLogin',
     name: 'redminLogin',
-    component: () => import('../views/AppRedmineLoginTest.vue'),
+    component: () => import('../views/AppRedmineLogin.vue'),
   },
   {
     path: '/my/page',
@@ -81,6 +80,13 @@ const routes = [
   },
 
   {
+    path: '/projects/:id/issues',
+    name: 'projectIssues',
+    component: () => import('../views/projects/AppProjectIssueList.vue'),
+  },
+
+
+  {
     path: '/projects/:id/settings/members',
     name: 'projectMembers',
     component: () => import('../views/projects/AppProjectMembers.vue'),
@@ -96,6 +102,7 @@ const routes = [
     name: 'issues',
     component: () => import('../views/issues/AppIssuesList.vue'),
   },
+
 
   {
     path: '/issues/new',
