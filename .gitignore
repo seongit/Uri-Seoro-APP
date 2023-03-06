@@ -34,7 +34,7 @@ build/
 /src/main/resources/application.properties
 /src/main/resources/application-dev.properties
 /src/main/resources/application-local.properties
-/src/main/java/com/sekim/uriseoro/config/enums/BaseURLType.java
-/frontend/vue.config.js
+#/src/main/java/com/sekim/uriseoro/config/enums/BaseURLType.java
+#/frontend/vue.config.js
 /frontend/commit_template.md
 /frontend/template.vue
