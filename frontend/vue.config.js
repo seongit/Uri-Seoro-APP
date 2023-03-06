@@ -8,11 +8,7 @@ module.exports = defineConfig({
   // npm run serve 개발 진행시에 포트가 다르기때문에 프록시 설정
    devServer: {
      //proxy: 'http://localhost:8081' // api 서버 포트 번호로 지정
-     proxy: {
-          target : process.env.VUE_API_URL, // 레드마인 api 주소 및 포트
-          changeOrigin:true,  
-          ws: false 
-  }
+    proxy : process.env.VUE_API_URL || 'http://localhost:8081'
   },
 
   // nginx reverse proxy 설정 시 다음과 같이 구성함
