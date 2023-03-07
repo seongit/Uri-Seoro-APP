@@ -10,6 +10,9 @@ export default new Vuex.Store({
     userInfo : {
       username : '',
     },
+
+    userMembershipInfo : []
+
   },
   getters: {
     isLogin(state){
@@ -18,13 +21,25 @@ export default new Vuex.Store({
     isAdmin(state){
       return state.userInfo.adminYN == 'Y';
     },
-  },
+
+    getUserMemberShipInfo(state){
+      return state.userMembershipInfo;
+    },
+
+    getUserInfo(state){
+      return state.userInfo;
+    }
+  }, 
   
 
   mutations: {
     setuserInfo(state, userInfo) {
         state.userInfo = userInfo;
     },
+
+    setuserMembershipInfo(state, userMembershipInfo) {
+      state.userMembershipInfo = userMembershipInfo;
+  },
 
     clearUserInfo(state){
       state.userInfo = {

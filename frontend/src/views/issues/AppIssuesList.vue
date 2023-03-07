@@ -1,6 +1,15 @@
 <template>
   <!--일감 전체 조회-->
   <!--eslint-disable-->
+
+  <!--
+
+    리팩토링 필요
+    AppIssueList와 AppProjectIssueList는 90%이상 동일한 소스이며,
+    AppProjectIssueList를 별도로 생성한 이유는 프로젝트 기준으로 일감을 조회하기 위해서 입니다.
+    소스코드 변경시 AppIssueList를 염두에 두고 변경할 것
+  -->
+
   <div>
     <!--메뉴 헤더-->
     <the-main-menu></the-main-menu>
@@ -16,7 +25,7 @@
         <div class="col-md-3">
           <div class="row" style="float: right">
             <div class="btn">
-              <router-link :to="{ name: 'issueCreate' }">
+              <router-link :to="{ name: 'issueCreate' }" v-if="isAdmin">
                 <font-awesome-icon icon="fa-solid fa-circle-plus" /> 새 일감 만들기
               </router-link>
             </div>
@@ -63,36 +72,7 @@
         </div>
       </fieldset>
 
-      <!--
-      <vuetable ref="vuetable"
-          api-url="http://localhost:8080/issue/issues.json"
-          :fields="fields"
-          @vuetable:row-dblclicked="onRowDoubleClicked"
-          @vuetable:row-clicked="onRowClicked"
-          data-path="issues"
-          pagination-path=""
-          class="table table-hover table-height"
-          @vuetable:pagination-data="onPaginationData"
-          @vuetable:loading="onLoading"        
-          @vuetable:loaded="onLoaded"
-          >
-
-          <div slot="test-slot" slot-scope="props">
-            권한이 있는 사용자만 편집 버튼 (...) 조회 가능
-            <div v-if="isVisableEditBtn">
-              <div class="btn" @click.prevent.stop="handleRowClick($event,props.rowData,1)">
-                <font-awesome-icon icon="fa-solid fa-ellipsis" />
-              </div>
-            </div>
-            <div v-else>
-
-            </div>
-          </div>
-      </vuetable>-->
-
       <!--api_url 변경 시 vuetable의 api 경로 또한 변경해야함-->
-
-      <!-- :api-url = "`/issue/getIssues/page=${page}`" -->
       <vuetable
         ref="vuetable"
         :api-url="this.setURLPath()"
@@ -190,14 +170,6 @@
         @option-clicked="subStatusClicked($event)"
       >
       </vue-simple-context-menu>
-
-      <!-- <vue-simple-context-menu
-          element-id="testMenu"
-          :options="TestArray"
-          ref="testContextMenu"
-          @option-clicked="subStatusClicked($event,StatusItemArrayForAdmin)"
-        >
-      </vue-simple-context-menu> -->
 
       <!--메인 메뉴 끝-->
     </div>
@@ -308,6 +280,16 @@ export default {
     };
   },
 
+  computed: {
+    isUserLogin() {
+      return this.$store.getters.isLogin;
+    },
+
+    isAdmin() {
+      return this.$store.getters.isAdmin;
+    },
+  },
+
   mounted() {
     this.settingSelectBoxList();
   },
@@ -334,6 +316,7 @@ export default {
         str += "&status_id=open";
       }
 
+      // 프로젝트 내에서 일감 탭 선택 시
       if (!this.$route.params.id) {
         str += `&project_id=`;
       }

@@ -70,30 +70,104 @@ export default {
     },
   },
   mounted() {
-    // 로그인하지 않을 경울 public
-    if (this.getPublicProjects()) {
-      apiProject
-        .getAllProjects()
-        .then((response) => {
-          this.projectsArr = response.data.projects;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } else {
-      let str = "isPublic=true";
-
-      apiProject
-        .getAllProjects(str)
-        .then((response) => {
-          this.projectsArr = response.data.projects;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
+    this.getAllProjects();
   },
+
   methods: {
+    async getAllProjects() {
+      let isPublic = "";
+
+      if (this.getPublicProjects()) {
+        isPublic = "false";
+      } else {
+        // 로그인하지 않을 경우 public
+        isPublic = "true";
+      }
+
+      // 로그인 했을 경우 public + 구성원에 해당하는 프로젝트만 조회
+      if (this.$store.getters.isLogin) {
+        await apiProject
+          .getAllProjects(isPublic)
+          .then((response) => {
+            //this.projectsArr = response.data.projects;
+            /*
+
+            // membership에 등록된 사용자일 경우 this.$store.getters.getUserMemberShipInfo 배열 길이는 1 이상
+            // console.log(this.$store.getters.getUserMemberShipInfo.length);
+            if (this.$store.getters.getUserMemberShipInfo.length > 0) {
+              let userMemberShipsArr = this.$store.getters.getUserMemberShipInfo;
+              let allProjectArr = response.data.projects;
+              allProjectArr.forEach((projectItem) => {
+                //console.log(projectItem);
+                // 공개된 프로젝트일 경우
+                if (projectItem.is_public == true) {
+                  this.projectsArr.push(projectItem);
+                }
+                // 로그인한 사용자의 프로젝트
+                userMemberShipsArr.forEach((item) => {
+                  // console.log(item);
+                  if (item.project.id == projectItem.id) {
+                    this.projectsArr.push(projectItem);
+                  }
+                });
+              });
+            } else if (this.$store.getters.isAdmin) {
+              // 관리자일 경우 전체 프로젝트 조회
+              this.projectsArr = response.data.projects;
+            }
+            */
+
+            if (this.$store.getters.isAdmin) {
+              // 관리자일 경우 전체 프로젝트 조회
+              this.projectsArr = response.data.projects;
+            } else if (this.$store.getters.getUserMemberShipInfo.length > 0) {
+              // membership에 등록된 사용자일 경우 this.$store.getters.getUserMemberShipInfo 배열 길이는 1 이상
+              let userMemberShipsArr = this.$store.getters.getUserMemberShipInfo;
+              let allProjectArr = response.data.projects;
+
+              allProjectArr.forEach((projectItem) => {
+                //console.log(projectItem);
+                // 공개된 프로젝트일 경우
+                if (projectItem.is_public == true) {
+                  this.projectsArr.push(projectItem);
+                } else {
+                  // 할당된 프로젝트가 있을 경우
+                  userMemberShipsArr.forEach((item) => {
+                    if (item.project.id == projectItem.id) {
+                      this.projectsArr.push(projectItem);
+                    }
+                  });
+                }
+              });
+            } else {
+              // 로그인은 했으나, 아직 구성원에 할당 받지 않은 경우
+              let allProjectArr = response.data.projects;
+              // 공개된 프로젝트일 경우
+              allProjectArr.forEach((projectItem) => {
+                //console.log(projectItem);
+                // 공개된 프로젝트일 경우
+                if (projectItem.is_public == true) {
+                  this.projectsArr.push(projectItem);
+                }
+              });
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        // 로그인하지 않았을 경우 -> Public 프로젝트만 조회
+        await apiProject
+          .getAllProjects(isPublic)
+          .then((response) => {
+            this.projectsArr = response.data.projects;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    },
+
     projectDetailPage(id) {
       this.$router.push({
         path: `/projects/${id}`,

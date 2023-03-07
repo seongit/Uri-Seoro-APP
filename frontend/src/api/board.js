@@ -1,6 +1,6 @@
 import axios from 'axios';
 /* eslint-disable */
-axios.defaults.baseURL = process.env.VUE_API_URL 
+// axios.defaults.baseURL = process.env.VUE_API_URL 
 
 export default {
     getArticles: function () {

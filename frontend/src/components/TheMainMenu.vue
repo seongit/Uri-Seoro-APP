@@ -25,27 +25,29 @@
               </router-link>
             </li>
 
-            <!--일감 전체 목록 페이지-->
-            <li v-if="isGetAllIssues" class="nav-item">
-              <router-link class="nav-link" active-class="active" exact :to="{ name: 'issues' }">
-                일감
-              </router-link>
-            </li>
-            <!--프로젝트 해당하는 일감 조회-->
-            <li v-if="isGetSelectedIssue" class="nav-item">
-              <!-- <a class="nav-link" @click="onClickedIssueBtn(projectIdFromRouteParams)">일감</a> -->
-              <router-link
-                class="nav-link"
-                active-class="active"
-                exact
-                :to="{ name: 'projectIssues' }"
-              >
-                일감
-              </router-link>
-            </li>
+            <!--관리자 - 사용자의 경우 전체 일감 조회 가능 - 사용자는 공개 프로젝트의 일감만 조회 가능 -->
+            <div v-if="getProjectIssueListTab">
+              <!--일감 전체 목록 페이지-->
+              <li v-if="isGetAllIssues" class="nav-item">
+                <router-link class="nav-link" active-class="active" exact :to="{ name: 'issues' }">
+                  일감
+                </router-link>
+              </li>
+              <!--프로젝트 해당하는 일감 조회-->
+              <li v-if="isGetSelectedIssue" class="nav-item">
+                <router-link
+                  class="nav-link"
+                  active-class="active"
+                  exact
+                  :to="{ name: 'projectIssues' }"
+                >
+                  일감
+                </router-link>
+              </li>
+            </div>
 
             <!--관리자만 해당 항목 보이도록 구현 필요-->
-            <li class="nav-item">
+            <li class="nav-item" v-if="isAdmin">
               <router-link
                 class="nav-link"
                 active-class="active"
@@ -77,6 +79,31 @@ export default {
     };
   },
 
+  computed: {
+    isAdmin() {
+      return this.$store.getters.isAdmin;
+    },
+
+    getPageTitle() {
+      if (this.$route.params.id) {
+        this.projectName = this.$props.name;
+        this.projectIdFromRouteParams = this.$route.params.id;
+        return this.projectName;
+      }
+      return "Redmine";
+    },
+
+    getProjectIssueListTab() {
+      if (this.$route.params.id) {
+        return true;
+      } else if (this.$store.getters.isAdmin) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+  },
+
   mounted() {
     if (this.projectIdFromRouteParams) {
       this.isGetSelectedIssue = true;
@@ -84,17 +111,6 @@ export default {
     }
   },
 
-  computed: {
-    getPageTitle() {
-      if (this.$route.params.id) {
-        console.log(`2====>${this.$route.params.id}`);
-        this.projectName = this.$props.name;
-        this.projectIdFromRouteParams = this.$route.params.id;
-        return this.projectName;
-      }
-      return "Redmine";
-    },
-  },
   methods: {
     onClickedIssueBtn(id) {
       console.log("id=====>" + id);

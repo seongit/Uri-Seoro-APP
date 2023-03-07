@@ -1,6 +1,13 @@
 <template>
   <!--일감 전체 조회-->
   <!--eslint-disable-->
+  <!--
+
+    리팩토링 필요
+    AppIssueList와 AppProjectIssueList는 90%이상 동일한 소스이며,
+    AppProjectIssueList를 별도로 생성한 이유는 프로젝트 기준으로 일감을 조회하기 위함
+    소스코드 변경시 AppIssueList를 염두에 두고 변경할 것
+  -->
   <div>
     <!--메뉴 헤더-->
     <the-main-menu :name="name"></the-main-menu>
@@ -14,7 +21,7 @@
         </div>
 
         <div class="col-md-3">
-          <div class="row" style="float: right">
+          <div class="row" style="float: right" v-if="isAdmin">
             <div class="btn">
               <router-link :to="{ name: 'issueCreate' }">
                 <font-awesome-icon icon="fa-solid fa-circle-plus" /> 새 일감 만들기
@@ -63,36 +70,7 @@
         </div>
       </fieldset>
 
-      <!--
-      <vuetable ref="vuetable"
-          api-url="http://localhost:8080/issue/issues.json"
-          :fields="fields"
-          @vuetable:row-dblclicked="onRowDoubleClicked"
-          @vuetable:row-clicked="onRowClicked"
-          data-path="issues"
-          pagination-path=""
-          class="table table-hover table-height"
-          @vuetable:pagination-data="onPaginationData"
-          @vuetable:loading="onLoading"        
-          @vuetable:loaded="onLoaded"
-          >
-
-          <div slot="test-slot" slot-scope="props">
-            권한이 있는 사용자만 편집 버튼 (...) 조회 가능
-            <div v-if="isVisableEditBtn">
-              <div class="btn" @click.prevent.stop="handleRowClick($event,props.rowData,1)">
-                <font-awesome-icon icon="fa-solid fa-ellipsis" />
-              </div>
-            </div>
-            <div v-else>
-
-            </div>
-          </div>
-      </vuetable>-->
-
       <!--api_url 변경 시 vuetable의 api 경로 또한 변경해야함-->
-
-      <!-- :api-url = "`/issue/getIssues/page=${page}`" -->
       <vuetable
         ref="vuetable"
         :api-url="this.setURLPath()"
@@ -190,14 +168,6 @@
         @option-clicked="subStatusClicked($event)"
       >
       </vue-simple-context-menu>
-
-      <!-- <vue-simple-context-menu
-          element-id="testMenu"
-          :options="TestArray"
-          ref="testContextMenu"
-          @option-clicked="subStatusClicked($event,StatusItemArrayForAdmin)"
-        >
-      </vue-simple-context-menu> -->
 
       <!--메인 메뉴 끝-->
     </div>
@@ -310,8 +280,15 @@ export default {
     };
   },
 
+  computed: {
+    isAdmin() {
+      return this.$store.getters.isAdmin;
+    },
+  },
+
   mounted() {
     this.settingSelectBoxList();
+    // 프로젝트 이름을 메뉴에 Setting하기 위함
     apiProject
       .getProjectDetail(this.$route.params.id)
       .then((response) => {
@@ -327,33 +304,9 @@ export default {
   },
 
   methods: {
-    setURLPath() {
-      let str = "/issue/getIssues/test?";
-
-      // vue-table에 조회할 데이터가 세팅되는 URL
-      // 관리자 -> 전체 일감 조회됨
-      // 개발자 -> 자신에게 할당된 일감 조회됨
-      if (this.userPermission == 1) {
-        str += "assigned_to_id=0";
-      } else {
-        str += "assigned_to_id=8";
-      }
-
-      // 검색 조건에 따라 검색 결과 변경
-      if (this.selectedSearchStatusID == 5) {
-        str += "&status_id=5";
-      } else if (this.selectedSearchStatusID == 1) {
-        str += "&status_id=1";
-      } else {
-        str += "&status_id=open";
-      }
-
-      if (this.$route.params.id) {
-        str += `&project_id=${this.$route.params.id}`;
-      }
-
-      return str;
-    },
+    /**
+     * 화면 Setting을 위한 메서드 정의
+     */
 
     // 검색조건 select박스에 change 이벤트마다 selectBox의 value 세팅하는 메서드
     setSelect(event) {
@@ -366,84 +319,11 @@ export default {
       this.selectedSearchStatusID = param;
     },
 
-    /**
-     * 리팩터링 필요
-     * 현재 TheIssueForm과 동일한 메서드를 중복으로 사용하고 있음
-     */
-    // 검색 조건 selectBox 세팅되는 메서드
-    settingSelectBoxList() {
-      // 유형 전체 목록 조회
-      apiIssue
-        .getTrackerList()
-        .then((response) => {
-          let res = response.data;
-          // select box 세팅
-          this.trackerList = res.trackers;
-
-          // select box 0번째 요소의 id를 초기값 설정
-          this.trackerId = res.trackers[0].id;
-        })
-        .catch((error) => {
-          console.log(error);
-        }),
-        // 상태 전체 목록 조회
-        apiIssue
-          .getIssueStatusArr()
-          .then((response) => {
-            console.log(response);
-
-            let res = response.data;
-
-            // select box 세팅
-            this.statusesList = res.issue_statuses;
-
-            // select box 0번째 요소의 id를 초기값 설정
-            this.statusId = res.issue_statuses[0].id;
-          })
-          .catch((error) => {
-            console.log(error);
-          }),
-        // 우선 순위 전체 목록 조회
-        apiIssue
-          .getPrioritiesArr()
-          .then((response) => {
-            let res = response.data;
-
-            // select box 세팅
-            this.priorityList = res.issue_priorities;
-
-            // select box 0번째 요소의 id를 초기값 설정
-            this.priorityId = res.issue_priorities[0].id;
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-    },
-
     // vuetable의 각 행을 클릭할 때 상세보기 페이지로 이동
     rowClicked(id) {
       this.$router.push({
         path: `/issues/${id}`,
       });
-    },
-
-    // 편집 아이콘 클릭 시 호출되는 메소드
-    handleRowClick(event, rowData, userPermission) {
-      // rowData 담아줌
-      this.ClickedRowData = rowData;
-      // context menu 팝업 출력됨
-
-      // 사용자 권한별로 조회되는 context 항목 상이함
-      // 1 == 관리자
-      // 2 == 일감을 할당 받은 개발자 (본인 일감만 편집 가능)
-
-      if (userPermission == 1) {
-        this.$refs.firstContextMenu.showMenu(event);
-      } else if (userPermission == 2) {
-        this.$refs.editorContextMenu.showMenu(event);
-      } else {
-        this.$refs.userContextMenu.showMenu(event);
-      }
     },
 
     /**
@@ -532,6 +412,103 @@ export default {
       }
 
       // window.alert(JSON.stringify(this.ClickedRowData));
+    },
+
+    // 편집 아이콘 클릭 시 호출되는 메소드
+    handleRowClick(event, rowData, userPermission) {
+      // rowData 담아줌
+      this.ClickedRowData = rowData;
+      // context menu 팝업 출력됨
+
+      // 사용자 권한별로 조회되는 context 항목 상이함
+      // 1 == 관리자
+      // 2 == 일감을 할당 받은 개발자 (본인 일감만 편집 가능)
+
+      if (userPermission == 1) {
+        this.$refs.firstContextMenu.showMenu(event);
+      } else if (userPermission == 2) {
+        this.$refs.editorContextMenu.showMenu(event);
+      } else {
+        this.$refs.userContextMenu.showMenu(event);
+      }
+    },
+
+    hideAllMenu() {
+      this.$refs?.firstContextMenu.hideContextMenu();
+      this.$refs?.editorContextMenu.hideContextMenu();
+      this.hideAllSubMenu();
+    },
+
+    hideAllSubMenu() {
+      this.$refs?.statusContextMenu.hideContextMenu();
+      this.$refs?.trackerContextMenu.hideContextMenu();
+      this.$refs?.statusContextMenu.hideContextMenu();
+      this.$refs?.priorityContextMenu.hideContextMenu();
+      this.$refs?.doneRatioContextMenu.hideContextMenu();
+    },
+
+    /**
+     * 일감 전체 목록 그리드 더블 클릭시 호출되는 메소드
+     * @param {*} dataItem
+     */
+    onRowDoubleClicked(dataItem) {
+      console.log("데이터 : " + JSON.stringify(dataItem.data));
+      console.log("이벤트 : " + JSON.stringify(dataItem.event));
+
+      this.$router.push({
+        path: `/issues/${dataItem.data.id}`,
+      });
+    },
+
+    /**
+     * 페이징 처리 관련
+     */
+
+    // 화면 로딩 시, 페이징 처리 데이터를 세팅하는 메소드
+    onPaginationData(obj) {
+      /*
+      The pagination component assumes that the following information are available for its calculation
+      total -- 사용 가능한 총 레코드 수
+      per_page -- 각 페이지의 레코드 수(페이지 크기)
+      current_page -- 이 데이터 청크의 현재 페이지 번호
+      last_page -- 이 데이터의 마지막 페이지 번호
+      next_page_url -- 다음 페이지의 URL
+      prev_page_url -- 이전 페이지의 URL
+      from --  페이지 크기와 관련하여 이 페이지의 시작 레코드
+      to -- 페이지 크기와 관련하여 이 페이지의 끝 레코드
+      */
+
+      // vuetable-pagination에서 필요하는 데이터 형식에 맞게 가공
+      let paginationData = {
+        total: obj.total_count,
+        per_page: obj.limit,
+        current_page: obj.current_page,
+        last_page: Math.ceil(obj.total_count / obj.limit) || 0,
+        next_page_url: "/",
+        prev_page_url: "/",
+        from: 1,
+        to: 10,
+      };
+
+      //console.log(paginationData);
+
+      this.$refs.pagination.setPaginationData(paginationData);
+    },
+
+    /*
+    
+    totalPage-- 마지막 페이지 번호
+    isOnFirstPage-- 현재 페이지 번호가 첫 번째 페이지인지 여부
+    isOnLastPage-- 현재 페이지 번호가 마지막 페이지인지 여부
+    notEnoughPages-- 모든 페이지가 슬라이딩 윈도우 크기보다 작은지 여부.
+    windowSize-- 슬라이딩 페이지 매김 창의 크기. * 2 +1 로 계산됩니다 on-each-side.
+    windowStart-- 이 슬라이딩 페이지 매김 창의 첫 번째 페이지 번호입니다.
+
+    */
+
+    // 페이지바 클릭 시 해당 페이지 번호가 담김
+    onChangePage(page) {
+      this.$refs.vuetable.changePage(page);
     },
 
     /**
@@ -666,82 +643,91 @@ export default {
       }
     },
 
-    hideAllMenu() {
-      this.$refs?.firstContextMenu.hideContextMenu();
-      this.$refs?.editorContextMenu.hideContextMenu();
-      this.hideAllSubMenu();
-    },
+    /**
+     * api 통신을 위한 메서드 정의
+     */
 
-    hideAllSubMenu() {
-      this.$refs?.statusContextMenu.hideContextMenu();
-      this.$refs?.trackerContextMenu.hideContextMenu();
-      this.$refs?.statusContextMenu.hideContextMenu();
-      this.$refs?.priorityContextMenu.hideContextMenu();
-      this.$refs?.doneRatioContextMenu.hideContextMenu();
+    setURLPath() {
+      let str = "/issue/getIssues/test?";
+
+      // vue-table에 조회할 데이터가 세팅되는 URL
+      // 관리자 -> 전체 일감 조회됨
+      // 개발자 -> 자신에게 할당된 일감 조회됨
+      if (this.userPermission == 1) {
+        str += "assigned_to_id=0";
+      } else {
+        str += "assigned_to_id=8";
+      }
+
+      // 검색 조건에 따라 검색 결과 변경
+      if (this.selectedSearchStatusID == 5) {
+        str += "&status_id=5";
+      } else if (this.selectedSearchStatusID == 1) {
+        str += "&status_id=1";
+      } else {
+        str += "&status_id=open";
+      }
+
+      // 프로젝트 내에서 일감 탭 선택 시
+      if (this.$route.params.id) {
+        str += `&project_id=${this.$route.params.id}`;
+      }
+
+      return str;
     },
 
     /**
-     * 일감 전체 목록 그리드 더블 클릭시 호출되는 메소드
-     * @param {*} dataItem
+     * 리팩터링 필요
+     * 현재 TheIssueForm과 동일한 메서드를 중복으로 사용하고 있음
      */
-    onRowDoubleClicked(dataItem) {
-      console.log("데이터 : " + JSON.stringify(dataItem.data));
-      console.log("이벤트 : " + JSON.stringify(dataItem.event));
+    // 검색 조건 selectBox 세팅되는 메서드
+    settingSelectBoxList() {
+      // 유형 전체 목록 조회
+      apiIssue
+        .getTrackerList()
+        .then((response) => {
+          let res = response.data;
+          // select box 세팅
+          this.trackerList = res.trackers;
 
-      this.$router.push({
-        path: `/issues/${dataItem.data.id}`,
-      });
-    },
+          // select box 0번째 요소의 id를 초기값 설정
+          this.trackerId = res.trackers[0].id;
+        })
+        .catch((error) => {
+          console.log(error);
+        }),
+        // 상태 전체 목록 조회
+        apiIssue
+          .getIssueStatusArr()
+          .then((response) => {
+            console.log(response);
 
-    /**
-     * 페이징 처리 관련
-     */
+            let res = response.data;
 
-    // 화면 로딩 시, 페이징 처리 데이터를 세팅하는 메소드
-    onPaginationData(obj) {
-      /*
-      The pagination component assumes that the following information are available for its calculation
-      total -- 사용 가능한 총 레코드 수
-      per_page -- 각 페이지의 레코드 수(페이지 크기)
-      current_page -- 이 데이터 청크의 현재 페이지 번호
-      last_page -- 이 데이터의 마지막 페이지 번호
-      next_page_url -- 다음 페이지의 URL
-      prev_page_url -- 이전 페이지의 URL
-      from --  페이지 크기와 관련하여 이 페이지의 시작 레코드
-      to -- 페이지 크기와 관련하여 이 페이지의 끝 레코드
-      */
+            // select box 세팅
+            this.statusesList = res.issue_statuses;
 
-      // vuetable-pagination에서 필요하는 데이터 형식에 맞게 가공
-      let paginationData = {
-        total: obj.total_count,
-        per_page: obj.limit,
-        current_page: obj.current_page,
-        last_page: Math.ceil(obj.total_count / obj.limit) || 0,
-        next_page_url: "/",
-        prev_page_url: "/",
-        from: 1,
-        to: 10,
-      };
+            // select box 0번째 요소의 id를 초기값 설정
+            this.statusId = res.issue_statuses[0].id;
+          })
+          .catch((error) => {
+            console.log(error);
+          }),
+        // 우선 순위 전체 목록 조회
+        apiIssue
+          .getPrioritiesArr()
+          .then((response) => {
+            let res = response.data;
 
-      //console.log(paginationData);
+            // select box 세팅
+            this.priorityList = res.issue_priorities;
 
-      this.$refs.pagination.setPaginationData(paginationData);
-    },
-
-    /*
-    
-    totalPage-- 마지막 페이지 번호
-    isOnFirstPage-- 현재 페이지 번호가 첫 번째 페이지인지 여부
-    isOnLastPage-- 현재 페이지 번호가 마지막 페이지인지 여부
-    notEnoughPages-- 모든 페이지가 슬라이딩 윈도우 크기보다 작은지 여부.
-    windowSize-- 슬라이딩 페이지 매김 창의 크기. * 2 +1 로 계산됩니다 on-each-side.
-    windowStart-- 이 슬라이딩 페이지 매김 창의 첫 번째 페이지 번호입니다.
-
-    */
-
-    // 페이지바 클릭 시 해당 페이지 번호가 담김
-    onChangePage(page) {
-      this.$refs.vuetable.changePage(page);
+            // select box 0번째 요소의 id를 초기값 설정
+            this.priorityId = res.issue_priorities[0].id;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
     },
   },
 };
