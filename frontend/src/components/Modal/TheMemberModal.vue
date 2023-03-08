@@ -6,10 +6,11 @@
     :min-width="200"
     :min-height="200"
     :reset="true"
-    width="1030"
-    height="635"
+    width="600"
+    height="550"
+    class="modal-area"
   >
-    <div style="background: #f3f3f3">
+    <div style="background: #f3f3f3; height: 100%">
       <form @submit.prevent="submitCreateMemberForm">
         <div class="custom-form">
           <div class="custom-form-area">
@@ -26,29 +27,27 @@
                   </div>
                 </div>
                 <!--모달 content 영역-->
-                <div class="col-md-11" style="height: 400px">
-                  <!-- <div style="margin-bottom: 10px">
+                <div class="col-md-12">
+                  <div style="margin-bottom: 10px">
                     <b>사용자 및 그룹 찾기</b>
                     <input class="form-control input-sm border-radius" type="text" />
-                  </div> -->
+                  </div>
                   <div class="objects-selection">
                     <!--div1 개에 label 4개씩 분리할 것-->
-                    <div>
-                      <label
-                        for="item.id"
-                        v-for="(item, index) in usersArr"
-                        :for="`user_${item.id}`"
-                        :key="index + '1'"
-                      >
-                        <input
-                          @click="selectedMembers(item.id)"
-                          :id="`user_${item.id}`"
-                          :value="item.id"
-                          type="checkbox"
-                        />
-                        <span>{{ item.lastname }} {{ item.firstname }}</span>
-                      </label>
-                    </div>
+                    <label
+                      for="item.id"
+                      v-for="(item, index) in usersArr"
+                      :for="`user_${item.id}`"
+                      :key="index + '1'"
+                    >
+                      <input
+                        @click="selectedMembers(item.id)"
+                        :id="`user_${item.id}`"
+                        :value="item.id"
+                        type="checkbox"
+                      />
+                      <span>{{ item.lastname }} {{ item.firstname }}</span>
+                    </label>
                   </div>
                 </div>
               </div>
@@ -70,7 +69,7 @@
           </div>
         </div>
         <!--버튼 영역-->
-        <div class="bottomBtn-area">
+        <div class="bottomBtn-area" style="margin-bottom: 3%">
           <div class="bottomBtn">
             <div>
               <button v-if="isRoleChecked" type="submit" class="btn btn-nomal">확인</button>
@@ -190,8 +189,14 @@ export default {
 };
 </script>
 <style scoped>
-.objects-selection label {
-  display: block;
+.objects-selection {
+  height: 200px;
+  overflow-y: scroll;
+  margin-bottom: 5%;
+}
+
+.objects-selection > label {
+  display: flex;
 }
 
 .objects-selection > div {
