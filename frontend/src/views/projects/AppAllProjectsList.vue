@@ -89,33 +89,6 @@ export default {
         await apiProject
           .getAllProjects(isPublic)
           .then((response) => {
-            //this.projectsArr = response.data.projects;
-            /*
-
-            // membership에 등록된 사용자일 경우 this.$store.getters.getUserMemberShipInfo 배열 길이는 1 이상
-            // console.log(this.$store.getters.getUserMemberShipInfo.length);
-            if (this.$store.getters.getUserMemberShipInfo.length > 0) {
-              let userMemberShipsArr = this.$store.getters.getUserMemberShipInfo;
-              let allProjectArr = response.data.projects;
-              allProjectArr.forEach((projectItem) => {
-                //console.log(projectItem);
-                // 공개된 프로젝트일 경우
-                if (projectItem.is_public == true) {
-                  this.projectsArr.push(projectItem);
-                }
-                // 로그인한 사용자의 프로젝트
-                userMemberShipsArr.forEach((item) => {
-                  // console.log(item);
-                  if (item.project.id == projectItem.id) {
-                    this.projectsArr.push(projectItem);
-                  }
-                });
-              });
-            } else if (this.$store.getters.isAdmin) {
-              // 관리자일 경우 전체 프로젝트 조회
-              this.projectsArr = response.data.projects;
-            }
-            */
 
             if (this.$store.getters.isAdmin) {
               // 관리자일 경우 전체 프로젝트 조회

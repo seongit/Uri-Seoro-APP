@@ -169,7 +169,7 @@ export default {
         issueCreateDate: "",
         issueStartDate: "",
         issueDueDate: "",
-        projectMembersList: [],
+        projectMembersList: [{ name: "선택", value: 0, id: 0 }],
       },
     };
   },
@@ -177,83 +177,79 @@ export default {
   mounted() {
     // null check 필요
     // 리팩터링 필요
-    apiIssue
-      .getIssueDetail(this.$route.params.id)
-      .then((response) => {
-        this.statusName = response.data.issuse;
 
-        let issueObj = response.data.issue;
-
-        console.log(response.data);
-
-        this.issueDetailObj.issueId = issueObj.id;
-        this.issueId = issueObj.id;
-
-        this.issueDetailObj.projectId = issueObj.project.id;
-        this.projectId = issueObj.project.id;
-
-        this.issueDetailObj.trackerId = issueObj.tracker.id;
-        this.trackerId = issueObj.tracker.id;
-
-        this.trackerName = issueObj.tracker.name;
-        this.issueDetailObj.trackerName = issueObj.tracker.name;
-
-        this.issueDetailObj.statusId = issueObj.status.id;
-        this.statusId = issueObj.status.id;
-
-        this.issueDetailObj.statusName = issueObj.status.name;
-        this.statusName = issueObj.status.name;
-
-        this.issueDetailObj.priorityId = issueObj.priority.id;
-        this.priorityId = issueObj.priority.id;
-
-        this.issueDetailObj.priorityName = issueObj.priority.name;
-        this.priorityName = issueObj.priority.name;
-
-        this.issueDetailObj.subject = issueObj.subject;
-        this.subject = issueObj.subject;
-
-        this.issueDetailObj.description = issueObj.description;
-        this.description = issueObj.description;
-
-        this.issueDetailObj.doneRatio = issueObj.done_ratio;
-        this.doneRatio = issueObj.done_ratio;
-
-        this.issueDetailObj.issueCreateDate = this.formattingDate(issueObj.created_on);
-        this.issueCreateDate = this.formattingDate(issueObj.created_on);
-
-        if (issueObj.start_date != null) {
-          this.issueDetailObj.issueStartDate = issueObj.start_date;
-          this.issueStartDate = this.formattingDate(issueObj.start_date);
-        } else {
-          this.issueStartDate = "-";
-        }
-
-        if (issueObj.due_date != null) {
-          this.issueDetailObj.issueDueDate = issueObj.due_date;
-          this.issueDueDate = this.formattingDate(issueObj.due_date);
-        } else {
-          this.issueDueDate = "-";
-        }
-
-        if (issueObj.assigned_to != null) {
-          this.issueDetailObj.assignedId = issueObj.assigned_to.id;
-          this.assignedId = issueObj.assigned_to.id;
-          this.issueDetailObj.assignedName = issueObj.assigned_to.name;
-          this.assignedName = issueObj.assigned_to.name;
-          this.setSelectBoxDataToAssignedMember(this.projectId);
-        } else {
-          this.assignedName = "-";
-        }
-
-        this.attachments = issueObj.attachments;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    this.getIssueDetail();
   },
 
   methods: {
+    async getIssueDetail() {
+      await apiIssue
+        .getIssueDetail(this.$route.params.id)
+        .then((response) => {
+          this.statusName = response.data.issuse;
+
+          let issueObj = response.data.issue;
+
+          this.issueDetailObj.issueId = issueObj.id;
+          this.issueDetailObj.projectId = issueObj.project.id;
+          this.issueDetailObj.trackerId = issueObj.tracker.id;
+          this.issueDetailObj.trackerName = issueObj.tracker.name;
+          this.issueDetailObj.statusId = issueObj.status.id;
+          this.issueDetailObj.statusName = issueObj.status.name;
+          this.issueDetailObj.priorityId = issueObj.priority.id;
+          this.issueDetailObj.priorityName = issueObj.priority.name;
+          this.issueDetailObj.subject = issueObj.subject;
+          this.issueDetailObj.description = issueObj.description;
+          this.issueDetailObj.doneRatio = issueObj.done_ratio;
+          this.issueDetailObj.issueCreateDate = this.formattingDate(issueObj.created_on);
+
+          this.issueId = issueObj.id;
+          this.projectId = issueObj.project.id;
+          this.trackerId = issueObj.tracker.id;
+          this.trackerName = issueObj.tracker.name;
+          this.statusId = issueObj.status.id;
+          this.statusName = issueObj.status.name;
+          this.priorityId = issueObj.priority.id;
+          this.priorityName = issueObj.priority.name;
+          this.subject = issueObj.subject;
+          this.description = issueObj.description;
+          this.doneRatio = issueObj.done_ratio;
+          this.issueCreateDate = this.formattingDate(issueObj.created_on);
+
+          if (issueObj.start_date != null) {
+            this.issueDetailObj.issueStartDate = issueObj.start_date;
+            this.issueStartDate = this.formattingDate(issueObj.start_date);
+          } else {
+            this.issueStartDate = "-";
+          }
+
+          if (issueObj.due_date != null) {
+            this.issueDetailObj.issueDueDate = issueObj.due_date;
+            this.issueDueDate = this.formattingDate(issueObj.due_date);
+          } else {
+            this.issueDueDate = "-";
+          }
+
+          console.log("issueObj.assigned_to ====>" + issueObj.assigned_to);
+
+          if (issueObj.assigned_to != null) {
+            this.issueDetailObj.assignedId = issueObj.assigned_to.id;
+            this.assignedId = issueObj.assigned_to.id;
+            this.issueDetailObj.assignedName = issueObj.assigned_to.name;
+            this.assignedName = issueObj.assigned_to.name;
+            this.setSelectBoxDataToAssignedMember(this.projectId);
+          } else {
+            this.assignedName = "-";
+            this.setSelectBoxDataToAssignedMember(this.projectId);
+          }
+
+          this.attachments = issueObj.attachments;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
     // 이전 페이지로 이동
     historyBackPage() {
       this.$router.go(-1);

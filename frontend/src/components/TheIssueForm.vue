@@ -327,7 +327,7 @@ export default {
     this.settingSelectBoxList();
   },
   methods: {
-    settingSelectBoxList() {
+    async settingSelectBoxList() {
       // 프로젝트 전체 목록 조회
       apiProject
         .getAllProjects()
@@ -404,71 +404,28 @@ export default {
             console.log(error);
           });
 
-      // assignedId
-      if (!this.$route.params.id) {
-        this.issueDetailObj.assignedId = this.projectMembersList[0].id;
-        console.log("this.projectMembersList[0].id===>" + this.projectMembersList[0].id);
-      }
+      // 담당자 selectbox의 초기값을 설정하기 위해 다음과 같이 세팅함
+      this.issueDetailObj.assignedId = this.projectMembersList[0].id;
+
+      // 백업
+      // if (!this.$route.params.id) {
+      //   this.issueDetailObj.assignedId = this.projectMembersList[0].id;
+      //   console.log("this.projectMembersList[0].id===>" + this.projectMembersList[0].id);
+      // } else {
+      //   this.issueDetailObj.assignedId = this.projectMembersList[0].id;
+      //   console.log(
+      //     "22222222===>this.projectMembersList[0].id===>" + this.projectMembersList[0].id
+      //   );
+      // }
     },
-
-    // settingProjectList() {
-    //   console.log(`=====>${this.$props.issueDetailObj.projectId}`);
-
-    //   this.projectId = this.$props.issueDetailObj.projectId;
-
-    //   apiMember
-    //     .getAllMembers(this.projectId)
-    //     .then((response) => {
-    //       // selectBox
-    //       let res = response.data;
-    //       let membershipArr = res.memberships;
-
-    //       // 구성원이 없는 프로젝트의 경우 projectMemeberList 초기화
-    //       if (membershipArr.length == 0) {
-    //         this.projectMembersList = [{ name: "선택", value: 0, id: 0 }];
-    //       } else {
-    //         // 프로젝트별 구성원 조회
-    //         membershipArr.forEach((item) => {
-    //           // console.log(item.user);
-    //           this.projectMembersList.push(item.user);
-    //         });
-    //       }
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //     });
-    // },
 
     // 폼 작성 완료 이후 확인 버튼 클릭 시 호출되는 메서드
     async onSubmitPostIssue() {
-      /**
-       * 일감 생성 시 다음과 같은 타입으로 POST 요청 보내기
-       * "uploads": [
-          {"token": "12.3cb5e4dcabd0133717a0d39eb83512d8ed34ba8abaa17c29f0d61139ff382c1c", "filename": "image.png", "content_type": "image/png"}
-        ]
-       */
-      
       // 입력값 검증 후 JSONObject에 데이터 담기
       if (this.formValidation()) {
-        // let IssueData =
-        //             {
-        //             "project_id" :  this.projectId,
-        //             "tracker_id" : this.trackerId,
-        //             "status_id" : this.statusId,
-        //             "priority_id": this.priorityId,
-        //             "subject" : this.subject,
-        //             "description" : this.description,
-        //             "assigned_to_id" : this.assignedId,
-        //             "author_id" : this.authorId,
-        //             "done_ratio" : this.doneRatio,
-        //             "start_date" : this.issueStartDate,
-        //             "due_date" : this.issueDueDate,
-        //             "uploads" : this.uploads
-        //           }
-
-        // assignedId가 0일 경우 null로 변경
+        // assignedId가 0일 경우 "로 변경
         if (this.issueDetailObj.assignedId == 0) {
-          this.issueDetailObj.assignedId = null;
+          this.issueDetailObj.assignedId = "";
         }
 
         let issue = {
@@ -492,7 +449,7 @@ export default {
             issue,
           };
 
-          console.log(requestIssue);
+          console.log("111111=>" + JSON.stringify(requestIssue));
 
           apiIssue
             .editIssue(this.$route.params.id, requestIssue)
@@ -609,11 +566,7 @@ export default {
           break;
         case "selectBoxAssignMember":
           {
-            // assignedId가 0일 경우 500 에러 발생
-            // 만약 담당자 지정을 하지 않을 경우 null로 초기화
-            value == 0
-              ? (this.issueDetailObj.assignedId = null)
-              : (this.issueDetailObj.assignedId = event.target.value);
+            this.issueDetailObj.assignedId = event.target.value;
           }
           break;
       }

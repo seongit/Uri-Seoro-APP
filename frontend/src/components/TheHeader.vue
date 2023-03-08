@@ -45,7 +45,7 @@
             내 페이지
           </router-link>
         </li>
-        <li class="nav-item">
+        <li v-if="isUserLogin" class="nav-item">
           <router-link class="nav-link" active-class="active" exact :to="{ name: 'projects' }">
             프로젝트
           </router-link>

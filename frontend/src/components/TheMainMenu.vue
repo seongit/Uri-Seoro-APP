@@ -46,8 +46,8 @@
               </li>
             </div>
 
-            <!--관리자만 해당 항목 보이도록 구현 필요-->
-            <li class="nav-item" v-if="isGetSelectedProject">
+            <!--관리자만 해당 항목 조회됨-->
+            <li class="nav-item" v-if="isAdminAndProjectId">
               <router-link
                 class="nav-link"
                 active-class="active"
@@ -102,6 +102,13 @@ export default {
       } else {
         return false;
       }
+    },
+
+    isAdminAndProjectId() {
+      if (this.$store.getters.isAdmin && this.$route.params.id) {
+        return true;
+      }
+      return false;
     },
   },
 

@@ -21,7 +21,8 @@
         </div>
 
         <div class="col-md-3">
-          <div class="row" style="float: right" v-if="isAdmin">
+          <!--23.03.08 프로젝트 구성원만 새 일감 만들기 화면 조회됨-->
+          <div class="row" style="float: right" v-if="isMember">
             <div class="btn">
               <router-link :to="{ name: 'issueCreate' }">
                 <font-awesome-icon icon="fa-solid fa-circle-plus" /> 새 일감 만들기
@@ -191,7 +192,8 @@ export default {
   data() {
     return {
       name: "",
-      userPermission: 1, // 사용자 권한
+      isPublic: false,
+      userPermission: this.setUserPermission(), // 사용자 권한  (1 == 관리자, 2 == 일감을 할당 받은 개발자 (본인 일감만 편집 가능))
       // 필드 항목 관리를 위해 별도의 파일로 구분하였음 (issueFiledsDef.js)
       fields: FieldsDef,
       // isVisableEditBtn : true => 버튼 조회
@@ -284,6 +286,28 @@ export default {
     isAdmin() {
       return this.$store.getters.isAdmin;
     },
+
+    isMember() {
+      let result = false;
+
+      let userMembershipArr = this.$store.getters.getUserMemberShipInfo;
+      // 관리자일 경우 전체 프로젝트 조회
+      if (this.$store.getters.isAdmin) {
+        return (result = true);
+      } else if (this.$store.getters.getUserMemberShipInfo.length > 0) {
+        // membership에 등록된 사용자일 경우 this.$store.getters.getUserMemberShipInfo 배열 길이는 1 이상
+        userMembershipArr.forEach((element) => {
+          if (element.project.id == this.$route.params.id) {
+            return (result = true);
+          }
+        });
+      } else {
+        // 공개프로젝트의 경우 return false
+        this.isPublic == true ? (result = false) : (result = true);
+      }
+
+      return result;
+    },
   },
 
   mounted() {
@@ -297,6 +321,7 @@ export default {
         let resObj = response.data.project;
 
         this.name = resObj.name;
+        this.isPublic = resObj.is_public;
       })
       .catch((error) => {
         console.log(error);
@@ -304,6 +329,19 @@ export default {
   },
 
   methods: {
+    setUserPermission() {
+      // 1 : 관리자
+      // 2 : 일감 할당 받은 구성원
+      // 3 : 조회
+      let result = 0;
+
+      if (this.$store.getters.isAdmin) {
+        result = 1;
+      }
+
+      return result;
+    },
+
     /**
      * 화면 Setting을 위한 메서드 정의
      */
@@ -496,7 +534,7 @@ export default {
     },
 
     /*
-    
+
     totalPage-- 마지막 페이지 번호
     isOnFirstPage-- 현재 페이지 번호가 첫 번째 페이지인지 여부
     isOnLastPage-- 현재 페이지 번호가 마지막 페이지인지 여부
@@ -646,18 +684,16 @@ export default {
     /**
      * api 통신을 위한 메서드 정의
      */
-
+    // vue-table에 조회할 데이터가 세팅되는 URL
     setURLPath() {
-      let str = "/issue/getIssues/test?";
+      let str = "/issue/getIssues/test?assigned_to_id=0";
 
-      // vue-table에 조회할 데이터가 세팅되는 URL
       // 관리자 -> 전체 일감 조회됨
-      // 개발자 -> 자신에게 할당된 일감 조회됨
-      if (this.userPermission == 1) {
-        str += "assigned_to_id=0";
-      } else {
-        str += "assigned_to_id=8";
-      }
+      // if (this.userPermission == 1) {
+      //   str += "assigned_to_id=0";
+      // } else {
+      //   str += "assigned_to_id=8";
+      // }
 
       // 검색 조건에 따라 검색 결과 변경
       if (this.selectedSearchStatusID == 5) {
@@ -729,6 +765,8 @@ export default {
             console.log(error);
           });
     },
+
+    // method 영역 끝
   },
 };
 </script>
