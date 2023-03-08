@@ -28,7 +28,7 @@
               <b>검색 조건</b>
               <br />
               <div class="row">
-                <div class="col-sm-3 searchUser">
+                <!-- <div class="col-sm-1 searchUser">
                   <div>
                     <label for="sel1">상태</label>
                   </div>
@@ -38,19 +38,23 @@
                       <option>삭제됨</option>
                     </select>
                   </div>
-                </div>
-                <div class="col-sm-6 searchUser">
+                </div> -->
+                <div class="col-sm-9 searchUser">
                   <div><label for="">프로젝트</label></div>
-                  <div>
-                    <input class="form-control border-radius" type="text" />
+                  <div style="width: 60%">
+                    <input
+                      class="form-control border-radius"
+                      type="text"
+                      @change="setTmpSearchWord($event)"
+                    />
                   </div>
                 </div>
                 <div class="col-sm-3">
                   <div class="btn">
-                    <!--검색 버튼 -->
-                    <router-link :to="{ name: '' }">
+                    <div class="btn searchBtn" @click="setSearchWord(tmpSearchWord)">
+                      <!--검색 버튼 -->
                       <img src="../../../public/images/searchBtn.png" />
-                    </router-link>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -150,6 +154,8 @@ export default {
       userPermission: 1, // 사용자 권한
       ClickedRowData: {},
       reloadComponent: 0,
+      tmpSearchWord: "",
+      enteredSearchWord: "",
     };
   },
   methods: {
@@ -166,7 +172,29 @@ export default {
     setURLPath() {
       let str = "/project/getAllProjects?";
 
+      if (this.enteredSearchWord != "") {
+        str += "searchWord=" + this.enteredSearchWord;
+      } else {
+        str += "searchWord=";
+      }
+
       return str;
+    },
+
+    /**
+     * 검색 조건 입력 후 change Event가 발생하면 tmpSearchWord 변수에 해당 값이 담김
+     * @param {*} event
+     */
+    setTmpSearchWord(event) {
+      this.tmpSearchWord = event.target.value;
+    },
+
+    /**
+     * 검색 버튼 클릭 시, enteredSearchWord 변수에 tmpSearWord의 값이 담김
+     * @param {*} param
+     */
+    setSearchWord(param) {
+      this.enteredSearchWord = param;
     },
 
     /**

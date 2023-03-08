@@ -404,8 +404,10 @@ export default {
             console.log(error);
           });
 
+      // assignedId
       if (!this.$route.params.id) {
         this.issueDetailObj.assignedId = this.projectMembersList[0].id;
+        console.log("this.projectMembersList[0].id===>" + this.projectMembersList[0].id);
       }
     },
 
@@ -445,7 +447,7 @@ export default {
           {"token": "12.3cb5e4dcabd0133717a0d39eb83512d8ed34ba8abaa17c29f0d61139ff382c1c", "filename": "image.png", "content_type": "image/png"}
         ]
        */
-
+      
       // 입력값 검증 후 JSONObject에 데이터 담기
       if (this.formValidation()) {
         // let IssueData =
@@ -464,7 +466,10 @@ export default {
         //             "uploads" : this.uploads
         //           }
 
-        console.log(this.issueDetailObj);
+        // assignedId가 0일 경우 null로 변경
+        if (this.issueDetailObj.assignedId == 0) {
+          this.issueDetailObj.assignedId = null;
+        }
 
         let issue = {
           project_id: this.issueDetailObj.projectId,
@@ -621,35 +626,67 @@ export default {
       console.log(pId);
       console.log(this.projectMembersList);
 
-      // projectMembersList 배열 초기화
-      if (this.projectMembersList.length > 0) {
-        this.projectMembersList = [{ name: "선택", value: 0, id: 0 }];
-        console.log(this.projectMembersList);
+      if (!this.$route.params.id) {
+        // projectMembersList 배열 초기화
+        if (this.projectMembersList.length > 0) {
+          this.projectMembersList = [{ name: "선택", value: 0, id: 0 }];
+          console.log(this.projectMembersList);
+        }
+        apiMember
+          .getAllMembers(projectId)
+          .then((response) => {
+            // selectBox
+            let res = response.data;
+            let membershipArr = res.memberships;
+
+            // 구성원이 없는 프로젝트의 경우 projectMemeberList 초기화
+            if (membershipArr.length == 0) {
+              this.projectMembersList = [{ name: "선택", value: 0, id: 0 }];
+            } else {
+              // 프로젝트별 구성원 조회
+              membershipArr.forEach((item) => {
+                // console.log(item.user);
+                this.projectMembersList.push(item.user);
+              });
+
+              console.log(this.projectMembersList);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        // 일감 상세 조회에서 편집 시 아래 로직을 탐
+        // issueDetailObj.projectMembersList 배열 초기화
+        if (this.issueDetailObj.projectMembersList.length > 0) {
+          this.issueDetailObj.projectMembersList = [{ name: "선택", value: 0, id: 0 }];
+        }
+        apiMember
+          .getAllMembers(projectId)
+          .then((response) => {
+            // selectBox
+            let res = response.data;
+            let membershipArr = res.memberships;
+
+            // 구성원이 없는 프로젝트의 경우 projectMemeberList 초기화
+            if (membershipArr.length == 0) {
+              this.issueDetailObj.projectMembersList = [{ name: "선택", value: 0, id: 0 }];
+            } else {
+              // 프로젝트별 구성원 조회
+              membershipArr.forEach((item) => {
+                // console.log(item.user);
+                this.issueDetailObj.projectMembersList.push(item.user);
+              });
+
+              console.log(this.issueDetailObj.projectMembersList);
+            }
+
+            this.issueDetailObj.assignedId = this.issueDetailObj.projectMembersList[0].id;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       }
-
-      apiMember
-        .getAllMembers(projectId)
-        .then((response) => {
-          // selectBox
-          let res = response.data;
-          let membershipArr = res.memberships;
-
-          // 구성원이 없는 프로젝트의 경우 projectMemeberList 초기화
-          if (membershipArr.length == 0) {
-            this.projectMembersList = [{ name: "선택", value: 0, id: 0 }];
-          } else {
-            // 프로젝트별 구성원 조회
-            membershipArr.forEach((item) => {
-              // console.log(item.user);
-              this.projectMembersList.push(item.user);
-            });
-
-            console.log(this.projectMembersList);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
     },
 
     // 삭제 아이콘 클릭 시 - 특정 첨부파일 삭제

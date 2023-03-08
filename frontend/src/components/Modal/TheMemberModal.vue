@@ -27,10 +27,10 @@
                 </div>
                 <!--모달 content 영역-->
                 <div class="col-md-11" style="height: 400px">
-                  <div style="margin-bottom: 10px">
+                  <!-- <div style="margin-bottom: 10px">
                     <b>사용자 및 그룹 찾기</b>
                     <input class="form-control input-sm border-radius" type="text" />
-                  </div>
+                  </div> -->
                   <div class="objects-selection">
                     <!--div1 개에 label 4개씩 분리할 것-->
                     <div>
@@ -73,7 +73,8 @@
         <div class="bottomBtn-area">
           <div class="bottomBtn">
             <div>
-              <button type="submit" class="btn btn-nomal">확인</button>
+              <button v-if="isRoleChecked" type="submit" class="btn btn-nomal">확인</button>
+              <button v-else type="submit" class="btn disabledbtn btn-nomal" disabled>확인</button>
               <button @click="$modal.hide('member-modal')" type="button" class="btn">취소</button>
             </div>
           </div>
@@ -101,6 +102,7 @@ export default {
       requestMemberArr: [],
       requestRolesArr: [],
       reloadModal: 0,
+      isRoleChecked: false,
     };
   },
 
@@ -144,6 +146,18 @@ export default {
       } else {
         this.requestRolesArr.push(roleId);
       }
+      this.setRolesCheckbox();
+    },
+
+    // 역할 (=필수값) 선택 여부에 따른 확인 버튼 화면 제어
+    setRolesCheckbox() {
+      if (this.requestRolesArr.length > 0) {
+        this.isRoleChecked = true;
+      } else {
+        this.isRoleChecked = false;
+      }
+
+      console.log();
     },
 
     // 구성원 생성 api 호출

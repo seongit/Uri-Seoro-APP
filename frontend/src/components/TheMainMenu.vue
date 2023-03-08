@@ -47,7 +47,7 @@
             </div>
 
             <!--관리자만 해당 항목 보이도록 구현 필요-->
-            <li class="nav-item" v-if="isAdmin">
+            <li class="nav-item" v-if="isGetSelectedProject">
               <router-link
                 class="nav-link"
                 active-class="active"
@@ -76,6 +76,7 @@ export default {
       projectIdFromRouteParams: 0,
       isGetAllIssues: true,
       isGetSelectedIssue: false,
+      isGetSelectedProject: false,
     };
   },
 
@@ -108,6 +109,7 @@ export default {
     if (this.projectIdFromRouteParams) {
       this.isGetSelectedIssue = true;
       this.isGetAllIssues = false;
+      this.isGetSelectedProject = true;
     }
   },
 

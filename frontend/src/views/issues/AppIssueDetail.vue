@@ -2,7 +2,7 @@
   <!--eslint-disable-->
   <div>
     <!--메뉴 헤더-->
-    <the-main-menu></the-main-menu>
+    <!-- <the-main-menu></the-main-menu> -->
 
     <!--페이지 메인 영역-->
     <div class="container page">
@@ -99,6 +99,15 @@
                 <img class="attachment-item" :src="item.thumbnail_url" />
               </a>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!--버튼 영역-->
+      <div class="bottomBtn-area">
+        <div class="bottomBtn">
+          <div>
+            <button @click="historyBackPage" type="button" class="btn">목록으로</button>
           </div>
         </div>
       </div>
@@ -245,6 +254,11 @@ export default {
   },
 
   methods: {
+    // 이전 페이지로 이동
+    historyBackPage() {
+      this.$router.go(-1);
+    },
+
     // 구성원 목록 조회 api 호출
     setSelectBoxDataToAssignedMember(projectId) {
       apiMember
