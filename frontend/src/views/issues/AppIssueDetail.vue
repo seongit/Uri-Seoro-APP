@@ -19,8 +19,8 @@
         </div>
 
         <!--[편집][삭제] 버튼-->
-        <!--관리자 + 작성자만 해당 버튼 보이도록 구현 필요-->
-        <div class="col-md-3">
+        <!--관리자 + 할당받은 사용자만 해당 버튼 보이도록 구현 필요-->
+        <div class="col-md-3" v-if="isAdminOrAssigned">
           <div class="row" style="float: right">
             <div class="btn" @click="editBtnClick()">
               <font-awesome-icon icon="fa-solid fa-pen" /> 편집
@@ -137,13 +137,15 @@ export default {
 
   data() {
     return {
-      isVisable: false, // 테스트를 위해 true로 설정하였음 false로 변경해야함
+      isVisable: false,
       issueId: 0,
+      projectId: 0, // 23.03.09 테스트
       trackerName: "",
       statusName: "",
       priorityName: "",
       subject: "",
       description: "",
+      assignedId: null,
       assignedName: null,
       doneRatio: 0,
       issueCreateDate: "",
@@ -179,6 +181,25 @@ export default {
     // 리팩터링 필요
 
     this.getIssueDetail();
+  },
+
+  computed: {
+    // 관리자 또는 일감 할당 받은 구성원일 경우 편
+    isAdminOrAssigned() {
+      let result = false;
+
+      // 관리자는 편집 가능
+      if (this.$store.getters.isAdmin) {
+        return true;
+      }
+
+      // 일감 할당된 구성원은 편집 가능하며, 일반 구성원은 편집 불가
+      if (this.$store.getters.getUserInfo.userNo == this.assignedId) {
+        return true;
+      }
+
+      return result;
+    },
   },
 
   methods: {
@@ -230,8 +251,6 @@ export default {
             this.issueDueDate = "-";
           }
 
-          console.log("issueObj.assigned_to ====>" + issueObj.assigned_to);
-
           if (issueObj.assigned_to != null) {
             this.issueDetailObj.assignedId = issueObj.assigned_to.id;
             this.assignedId = issueObj.assigned_to.id;
@@ -269,7 +288,7 @@ export default {
             this.issueDetailObj.projectMembersList.push(item.user);
           });
 
-          console.log(this.issueDetailObj.projectMembersList);
+          // console.log(this.issueDetailObj.projectMembersList);
         })
         .catch((error) => {
           console.log(error);
@@ -331,7 +350,7 @@ export default {
 
     IssuesListPage() {
       this.$router.push({
-        path: "/issues",
+        path: `/projects/${this.isu}/issues`,
       });
     },
   },

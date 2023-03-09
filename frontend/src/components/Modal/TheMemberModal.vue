@@ -15,14 +15,14 @@
         <div class="custom-form">
           <div class="custom-form-area">
             <div class="col-md-12">
-              <div class="cancleBtn" @click="$modal.hide('member-modal')">
+              <div class="cancleBtn" @click="closeModal">
                 <font-awesome-icon icon="fa-solid fa-xmark" />
               </div>
               <div class="row">
                 <!--모달 헤더-->
                 <div class="col-md-12">
                   <div class="row">
-                    <div class="col-md-11"><b>새 구성원</b></div>
+                    <div class="col-md-11"><h3>새 구성원</h3></div>
                     <div class="col-md-1" style="float: right"></div>
                   </div>
                 </div>
@@ -30,24 +30,56 @@
                 <div class="col-md-12">
                   <div style="margin-bottom: 10px">
                     <b>사용자 및 그룹 찾기</b>
-                    <input class="form-control input-sm border-radius" type="text" />
+                    <div class="row" style="justify-content: space-between">
+                      <div class="col-md-7">
+                        <input
+                          class="form-control input-sm border-radius"
+                          type="text"
+                          @change="setTmpSearchWord($event)"
+                        />
+                      </div>
+                      <div class="col-md-3">
+                        <div @click="setSearchWord(tmpSearchWord)">
+                          <!--검색 버튼 -->
+                          <img src="../../../public/images/searchBtn.png" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="objects-selection">
-                    <!--div1 개에 label 4개씩 분리할 것-->
-                    <label
-                      for="item.id"
-                      v-for="(item, index) in usersArr"
-                      :for="`user_${item.id}`"
-                      :key="index + '1'"
-                    >
-                      <input
-                        @click="selectedMembers(item.id)"
-                        :id="`user_${item.id}`"
-                        :value="item.id"
-                        type="checkbox"
-                      />
-                      <span>{{ item.lastname }} {{ item.firstname }}</span>
-                    </label>
+
+                  <div class="row">
+                    <div class="col-md-6 objects-selection">
+                      <b>사용자 전체 목록</b>
+                      <label
+                        for="item.id"
+                        v-for="(item, index) in usersArr"
+                        :for="`user_${item.id}`"
+                        :key="index + '1'"
+                      >
+                        <input
+                          @click.prevent.stop="selectedMembers(index, item)"
+                          :id="`user_${item.id}`"
+                          :value="item.id"
+                          type="checkbox"
+                        />
+                        <span>{{ item.lastname }} {{ item.firstname }}</span>
+                      </label>
+                    </div>
+
+                    <div class="col-md-6 objects-selection">
+                      <b>선택된 사용자</b>
+                      <label
+                        for="item.id"
+                        v-for="(item, index) in requestMemberArr"
+                        :for="`user_${item.id}`"
+                        :key="index + '1'"
+                      >
+                        <span>{{ item.lastname }} {{ item.firstname }}</span>
+                        <div class="cancleBtn" @click="cancleRequestMember(item)">
+                          <font-awesome-icon icon="fa-solid fa-xmark" style="margin: auto" />
+                        </div>
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -74,7 +106,7 @@
             <div>
               <button v-if="isRoleChecked" type="submit" class="btn btn-nomal">확인</button>
               <button v-else type="submit" class="btn disabledbtn btn-nomal" disabled>확인</button>
-              <button @click="$modal.hide('member-modal')" type="button" class="btn">취소</button>
+              <button @click="closeModal" type="button" class="btn">취소</button>
             </div>
           </div>
         </div>
@@ -88,6 +120,7 @@
 import apiUser from "../../api/user.js";
 import apiRoles from "../../api/roles.js";
 import apiMember from "../../api/member.js";
+import { of } from "rxjs";
 
 export default {
   name: "MemberModal",
@@ -97,43 +130,140 @@ export default {
       paragraphs: [null, null],
       timer: null,
       usersArr: [],
+      membersArr: [],
       rolesArr: [],
       requestMemberArr: [],
       requestRolesArr: [],
       reloadModal: 0,
       isRoleChecked: false,
+      tmpSearchWord: "",
+      enteredSearchWord: "",
     };
   },
 
   mounted() {
+    // 구성원 전체 목록 조회
+    this.getAllMembers();
     // 사용자 전체 목록 조회
-    apiUser
-      .getAllUsers()
+    this.getAllUsers();
+
+    // 역할 목록 조회
+    apiRoles
+      .getRoles()
       .then((response) => {
-        this.usersArr = response.data.users;
+        this.rolesArr = response.data.roles;
       })
       .catch((error) => {
         console.log(error);
-      }),
-      // 역할 목록 조회
-      apiRoles
-        .getRoles()
+      });
+  },
+
+  methods: {
+    closeModal() {
+      this.$modal.hide("member-modal");
+      // 요청 MEMber 초기화
+      this.requestMemberArr = [];
+      location.reload();
+    },
+
+    /**
+     * 검색 조건 입력 후 change Event가 발생하면 tmpSearchWord 변수에 해당 값이 담김
+     * @param {*} event
+     */
+    setTmpSearchWord(event) {
+      this.tmpSearchWord = event.target.value;
+    },
+
+    /**
+     * 검색 버튼 클릭 시, enteredSearchWord 변수에 tmpSearWord의 값이 담김
+     * @param {*} param
+     */
+    setSearchWord(param) {
+      this.enteredSearchWord = param;
+      this.getAllUsers(this.enteredSearchWord);
+    },
+
+    // project Member 조회
+    async getAllMembers() {
+      let projectId = this.$route.params.id;
+
+      await apiMember
+        .getAllMembers(projectId)
         .then((response) => {
-          this.rolesArr = response.data.roles;
+          let memberships = response.data.memberships;
+
+          this.membersArr = memberships;
         })
         .catch((error) => {
           console.log(error);
         });
-  },
+    },
 
-  methods: {
-    // 사용자 목록 check box 클릭 시 requestMemberArr 배열에 담김
-    selectedMembers(userId) {
-      if (this.requestMemberArr.includes(userId)) {
+    async getAllUsers(params) {
+      let searchWord = "";
+
+      if (params != "") {
+        searchWord = this.enteredSearchWord;
+      }
+
+      await apiUser
+        .getAllUsers(searchWord)
+        .then((response) => {
+          console.log(this.membersArr.length);
+
+          let countMember = this.membersArr.length;
+          let memberArr = this.membersArr;
+          const usersArr = response.data.users;
+
+          if (countMember > 0) {
+            const uniqueUsersArr = []; // 새로운 배열 선언
+
+            for (let j = 0; j < usersArr.length; j++) {
+              let isDuplicate = false;
+              for (let i = 0; i < memberArr.length; i++) {
+                if (memberArr[i].user.id == usersArr[j].id) {
+                  isDuplicate = true;
+                  break;
+                }
+              }
+              if (!isDuplicate) {
+                uniqueUsersArr.push(usersArr[j]); // 중복되지 않은 요소만 새로운 배열에 추가
+              }
+            }
+            // 사용자 중 해당 프로젝트의 구성원이 아닌 경우에만  this.usersArr에 세팅
+            this.usersArr = uniqueUsersArr;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    // 선택한 사용자 삭제
+    cancleRequestMember(memberObj) {
+      if (this.requestMemberArr.includes(memberObj)) {
         // 기존 데이터에 userId가 있다면 삭제
-        this.requestMemberArr.pop(userId);
+        this.requestMemberArr.pop(memberObj);
+        this.usersArr.push(memberObj);
       } else {
-        this.requestMemberArr.push(userId);
+        this.requestMemberArr.push(memberObj);
+      }
+    },
+
+    // 사용자 목록 check box 클릭 시 requestMemberArr 배열에 담김
+    selectedMembers(idx, userObj) {
+      console.log(userObj.id);
+
+      if (this.requestMemberArr.includes(userObj)) {
+        // 기존 데이터에 userId가 있다면 삭제
+        this.requestMemberArr.pop(userObj);
+      } else {
+        this.requestMemberArr.push(userObj);
+      }
+
+      if (this.usersArr.includes(userObj)) {
+        const removeUserArr = this.usersArr;
+        removeUserArr.splice(idx, 1);
       }
     },
 
@@ -155,14 +285,18 @@ export default {
       } else {
         this.isRoleChecked = false;
       }
-
-      console.log();
     },
 
     // 구성원 생성 api 호출
     async submitCreateMemberForm() {
+      let requestMemberIdArr = [];
+
+      this.requestMemberArr.forEach((element) => {
+        requestMemberIdArr.push(element.id);
+      });
+
       let requestData = {
-        user_ids: this.requestMemberArr,
+        user_ids: requestMemberIdArr,
         role_ids: this.requestRolesArr,
       };
 
@@ -179,6 +313,7 @@ export default {
             this.$modal.hide("member-modal");
             //정상적으로 구성원 등록이 완료되었을 경우에만 reloadModal
             this.$emit("reloadModal", this.reloadModal);
+            this.requestMemberArr = [];
           }
         })
         .catch((error) => {
@@ -193,6 +328,9 @@ export default {
   height: 200px;
   overflow-y: scroll;
   margin-bottom: 5%;
+}
+
+.userList-area {
 }
 
 .objects-selection > label {

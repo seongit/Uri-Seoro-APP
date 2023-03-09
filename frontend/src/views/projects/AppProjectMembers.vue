@@ -30,9 +30,9 @@
             :key="reloadComponent"
           >
             <div slot="status-slot" slot-scope="props">
-              <div class="btn" @click="editBtnClick()">
+              <!-- <div class="btn" @click="editBtnClick()">
                 <font-awesome-icon icon="fa-solid fa-pen" /> 편집
-              </div>
+              </div> -->
               <div class="btn" @click.prevent.stop="handleRowClick(props.rowData)">
                 <font-awesome-icon icon="fa-solid fa-trash" /> 삭제
               </div>

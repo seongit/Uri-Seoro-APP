@@ -85,6 +85,11 @@ const routes = [
     component: () => import('../views/projects/AppProjectIssueList.vue'),
   },
 
+  {
+    path: '/projects/:id/issue/new',
+    name: 'projectIssueCreate',
+    component: () => import('../views/projects/AppProjectIssueCreate.vue'),
+  },
 
   {
     path: '/projects/:id/settings/members',

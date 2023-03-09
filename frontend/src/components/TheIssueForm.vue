@@ -6,7 +6,8 @@
       <fieldset class="form-group">
         <div class="custom-form border-radius">
           <div class="custom-form-area">
-            <div class="row">
+            <!--admin일 경우에만 프로젝트 수정 가능-->
+            <div class="row" v-if="this.$store.getters.isAdmin">
               <div class="col-md-2">
                 <label for="selectBoxProject">프로젝트 * </label>
               </div>
@@ -112,7 +113,7 @@
 
               <div class="col-md-1"></div>
 
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <label>완료기한 </label>
               </div>
               <div class="col-sm-3">
@@ -145,7 +146,7 @@
               </div>
               <div class="col-md-1"></div>
 
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <label for="selectBoxDoneRatio">진척도 </label>
               </div>
               <div class="col-sm-3">
@@ -268,7 +269,7 @@ import TheToastUIEditor from "./TheToastUIEditor.vue";
 import apiIssue from "../api/issue.js";
 import apiProject from "../api/project.js";
 import apiMember from "../api/member.js";
-import { of } from "rxjs";
+
 
 /* eslint-disable */
 export default {
@@ -328,7 +329,26 @@ export default {
   },
   methods: {
     async settingSelectBoxList() {
-      // 프로젝트 전체 목록 조회
+      // 프로젝트 전체 목록 조회 - 백업
+      // apiProject
+      //   .getAllProjects()
+      //   .then((response) => {
+      //     // console.log(response);
+
+      //     let res = response.data;
+
+      //     let projectArr = res.projects;
+
+      //     projectArr.forEach((item) => {
+      //       this.projectList.push(item);
+      //     });
+      //     // select box 0번째 요소의 id를 초기값 설정
+      //     this.issueDetailObj.projectId = this.priorityList[0].id;
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //   });
+
       apiProject
         .getAllProjects()
         .then((response) => {
@@ -342,7 +362,11 @@ export default {
             this.projectList.push(item);
           });
           // select box 0번째 요소의 id를 초기값 설정
-          this.issueDetailObj.projectId = this.priorityList[0].id;
+          // console.log("this.issueDetailObj.projectId=>" + this.issueDetailObj.projectId);
+
+          if (this.issueDetailObj.projectId == 0) {
+            this.issueDetailObj.projectId = this.priorityList[0].id;
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -443,13 +467,25 @@ export default {
           uploads: this.uploads,
         };
 
-        // 일감 편집
-        if (this.$route.params.id) {
+        const path = this.$route.path;
+        if (path.includes("new")) {
+          apiIssue
+            .postIssue(issue)
+            .then((response) => {
+              if (response.status == 200) {
+                alert("일감 등록에 성공하였습니다.");
+                this.IssuesListPage();
+              } else {
+                console.log(response);
+              }
+            })
+            .catch((e) => {
+              console.log(`ERROR:${e}`);
+            });
+        } else if (path.includes(this.$route.params.id)) {
           let requestIssue = {
             issue,
           };
-
-          console.log("111111=>" + JSON.stringify(requestIssue));
 
           apiIssue
             .editIssue(this.$route.params.id, requestIssue)
@@ -470,21 +506,6 @@ export default {
             })
             .catch((error) => {
               console.log(error);
-            });
-        } else {
-          // 일감 생성
-          apiIssue
-            .postIssue(issue)
-            .then((response) => {
-              if (response.status == 200) {
-                alert("일감 등록에 성공하였습니다.");
-                this.IssuesListPage();
-              } else {
-                console.log(response);
-              }
-            })
-            .catch((e) => {
-              console.log(`ERROR:${e}`);
             });
         }
       } else {
@@ -576,8 +597,8 @@ export default {
     setSelectBoxDataToAssignedMember(projectId) {
       let pId = projectId;
 
-      console.log(pId);
-      console.log(this.projectMembersList);
+      // console.log(pId);
+      // console.log(this.projectMembersList);
 
       if (!this.$route.params.id) {
         // projectMembersList 배열 초기화
@@ -724,5 +745,9 @@ export default {
   padding: 0;
   overflow: hidden;
   border: 0;
+}
+
+.mx-datepicker {
+  width: 100%;
 }
 </style>

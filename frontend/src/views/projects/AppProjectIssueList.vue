@@ -24,7 +24,7 @@
           <!--23.03.08 프로젝트 구성원만 새 일감 만들기 화면 조회됨-->
           <div class="row" style="float: right" v-if="isMember">
             <div class="btn">
-              <router-link :to="{ name: 'issueCreate' }">
+              <router-link :to="{ name: 'projectIssueCreate' }">
                 <font-awesome-icon icon="fa-solid fa-circle-plus" /> 새 일감 만들기
               </router-link>
             </div>
