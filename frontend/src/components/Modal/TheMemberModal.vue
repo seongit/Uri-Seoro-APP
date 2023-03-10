@@ -75,7 +75,10 @@
                         :key="index + '1'"
                       >
                         <span>{{ item.lastname }} {{ item.firstname }}</span>
-                        <div class="cancleBtn" @click="cancleRequestMember(item)">
+                        <div
+                          class="cancleBtn"
+                          @click.prevent.stop="cancleRequestMember(index, item)"
+                        >
                           <font-awesome-icon icon="fa-solid fa-xmark" style="margin: auto" />
                         </div>
                       </label>
@@ -154,7 +157,7 @@ export default {
         this.rolesArr = response.data.roles;
       })
       .catch((error) => {
-        console.log(error);
+        console.log(`ERROR:${error}`);
       });
   },
 
@@ -191,11 +194,10 @@ export default {
         .getAllMembers(projectId)
         .then((response) => {
           let memberships = response.data.memberships;
-
           this.membersArr = memberships;
         })
         .catch((error) => {
-          console.log(error);
+          console.log(`ERROR:${error}`);
         });
     },
 
@@ -209,7 +211,7 @@ export default {
       await apiUser
         .getAllUsers(searchWord)
         .then((response) => {
-          console.log(this.membersArr.length);
+          // console.log(this.membersArr.length);
 
           let countMember = this.membersArr.length;
           let memberArr = this.membersArr;
@@ -232,18 +234,26 @@ export default {
             }
             // 사용자 중 해당 프로젝트의 구성원이 아닌 경우에만  this.usersArr에 세팅
             this.usersArr = uniqueUsersArr;
+          } else {
+            this.usersArr = usersArr;
           }
         })
         .catch((error) => {
-          console.log(error);
+          console.log(`ERROR:${e}`);
         });
     },
 
-    // 선택한 사용자 삭제
-    cancleRequestMember(memberObj) {
+    //
+    cancleRequestMember(idx, memberObj) {
+      let temMemberArr = this.requestMemberArr;
       if (this.requestMemberArr.includes(memberObj)) {
         // 기존 데이터에 userId가 있다면 삭제
-        this.requestMemberArr.pop(memberObj);
+        const result = temMemberArr.filter((value, index, arr) => {
+          if (index !== idx) return arr;
+        });
+
+        this.requestMemberArr = result;
+
         this.usersArr.push(memberObj);
       } else {
         this.requestMemberArr.push(memberObj);
@@ -252,7 +262,7 @@ export default {
 
     // 사용자 목록 check box 클릭 시 requestMemberArr 배열에 담김
     selectedMembers(idx, userObj) {
-      console.log(userObj.id);
+      // console.log(userObj.id);
 
       if (this.requestMemberArr.includes(userObj)) {
         // 기존 데이터에 userId가 있다면 삭제
@@ -305,7 +315,7 @@ export default {
       apiMember
         .createMember(requestData, projectId)
         .then((response) => {
-          console.log(response);
+          // console.log(response);
 
           if (response.status == 200) {
             alert(`구성원 등록을 완료하였습니다.`);
@@ -317,7 +327,7 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(error);
+          console.log(`ERROR:${error}`);
         });
     },
   },

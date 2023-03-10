@@ -56,6 +56,13 @@ export default [
     name : "subject",
     title : "제목",
     width : "10%",
+    formatter (value) {
+      let result = ''
+      if(value.length > 10){
+       return result = value.substr(0,10) + "..."
+      }
+      return result = value
+    }
   },
   {
     name : "updated_on",

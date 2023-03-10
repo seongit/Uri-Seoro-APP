@@ -71,6 +71,7 @@
                   class="form-control border-radius"
                   type="text"
                   id="inputSubject"
+                  maxlength="60"
                   v-model="issueDetailObj.subject"
                 />
               </div>
@@ -245,7 +246,7 @@
       <div class="bottomBtn-area">
         <div class="bottomBtn">
           <div>
-            <button type="submit" class="btn btn-nomal">{{ getBtnText }}</button>
+            <button type="submit" class="btn btn-nomal">등록</button>
             <!-- <button @click="onSubmitPostIssue" type="button" class="btn btn-nomal">확인</button> -->
             <button @click="historyBackPage" type="button" class="btn">취소</button>
           </div>
@@ -269,7 +270,6 @@ import TheToastUIEditor from "./TheToastUIEditor.vue";
 import apiIssue from "../api/issue.js";
 import apiProject from "../api/project.js";
 import apiMember from "../api/member.js";
-
 
 /* eslint-disable */
 export default {
@@ -317,38 +317,13 @@ export default {
     };
   },
 
-  computed: {
-    getBtnText() {
-      if (this.$route.params.id) return "수정";
-      return "등록";
-    },
-  },
+  computed: {},
 
   mounted() {
     this.settingSelectBoxList();
   },
   methods: {
     async settingSelectBoxList() {
-      // 프로젝트 전체 목록 조회 - 백업
-      // apiProject
-      //   .getAllProjects()
-      //   .then((response) => {
-      //     // console.log(response);
-
-      //     let res = response.data;
-
-      //     let projectArr = res.projects;
-
-      //     projectArr.forEach((item) => {
-      //       this.projectList.push(item);
-      //     });
-      //     // select box 0번째 요소의 id를 초기값 설정
-      //     this.issueDetailObj.projectId = this.priorityList[0].id;
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   });
-
       apiProject
         .getAllProjects()
         .then((response) => {
@@ -369,7 +344,7 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(error);
+          console.log(`ERROR:${error}`);
         });
 
       // 유형 전체 목록 조회
@@ -388,7 +363,7 @@ export default {
           this.issueDetailObj.trackerId = this.trackerList[0].id;
         })
         .catch((error) => {
-          console.log(error);
+          console.log(`ERROR:${error}`);
         }),
         // 상태 전체 목록 조회
         apiIssue
@@ -406,7 +381,7 @@ export default {
             this.issueDetailObj.statusId = this.statusesList[0].id;
           })
           .catch((error) => {
-            console.log(error);
+            console.log(`ERROR:${error}`);
           }),
         // 우선 순위 전체 목록 조회
         apiIssue
@@ -425,7 +400,7 @@ export default {
             this.issueDetailObj.priorityId = this.priorityList[0].id;
           })
           .catch((error) => {
-            console.log(error);
+            console.log(`ERROR:${error}`);
           });
 
       // 담당자 selectbox의 초기값을 설정하기 위해 다음과 같이 세팅함
@@ -452,6 +427,9 @@ export default {
           this.issueDetailObj.assignedId = "";
         }
 
+        let author_id = this.$store.getters.getUserInfo.userNo;
+        // console.log("author_id===>" + author_id);
+
         let issue = {
           project_id: this.issueDetailObj.projectId,
           tracker_id: this.issueDetailObj.trackerId,
@@ -460,7 +438,7 @@ export default {
           subject: this.issueDetailObj.subject,
           description: this.issueDetailObj.description,
           assigned_to_id: this.issueDetailObj.assignedId,
-          author_id: this.issueDetailObj.authorId,
+          author_id: author_id,
           done_ratio: this.issueDetailObj.doneRatio,
           start_date: this.issueDetailObj.issueStartDate,
           due_date: this.issueDetailObj.issueDueDate,
@@ -474,9 +452,9 @@ export default {
             .then((response) => {
               if (response.status == 200) {
                 alert("일감 등록에 성공하였습니다.");
-                this.IssuesListPage();
+                this.$router.go(-1);
               } else {
-                console.log(response);
+                // console.log(response);
               }
             })
             .catch((e) => {
@@ -505,7 +483,7 @@ export default {
               }
             })
             .catch((error) => {
-              console.log(error);
+              console.log(`ERROR:${e}`);
             });
         }
       } else {
@@ -529,11 +507,11 @@ export default {
       ) {
         result = true;
       } else {
-        console.log(this.issueDetailObj.projectId);
-        console.log(this.issueDetailObj.trackerId);
-        console.log(this.issueDetailObj.statusId);
-        console.log(this.issueDetailObj.subject);
-        console.log(this.issueDetailObj.priorityId);
+        // console.log(this.issueDetailObj.projectId);
+        // console.log(this.issueDetailObj.trackerId);
+        // console.log(this.issueDetailObj.statusId);
+        // console.log(this.issueDetailObj.subject);
+        // console.log(this.issueDetailObj.priorityId);
       }
 
       return result;
@@ -604,7 +582,7 @@ export default {
         // projectMembersList 배열 초기화
         if (this.projectMembersList.length > 0) {
           this.projectMembersList = [{ name: "선택", value: 0, id: 0 }];
-          console.log(this.projectMembersList);
+          // console.log(this.projectMembersList);
         }
         apiMember
           .getAllMembers(projectId)
@@ -623,11 +601,11 @@ export default {
                 this.projectMembersList.push(item.user);
               });
 
-              console.log(this.projectMembersList);
+              // console.log(this.projectMembersList);
             }
           })
           .catch((error) => {
-            console.log(error);
+            console.log(`ERROR:${error}`);
           });
       } else {
         // 일감 상세 조회에서 편집 시 아래 로직을 탐
@@ -652,13 +630,13 @@ export default {
                 this.issueDetailObj.projectMembersList.push(item.user);
               });
 
-              console.log(this.issueDetailObj.projectMembersList);
+              // console.log(this.issueDetailObj.projectMembersList);
             }
 
             this.issueDetailObj.assignedId = this.issueDetailObj.projectMembersList[0].id;
           })
           .catch((error) => {
-            console.log(error);
+            console.log(`ERROR:${error}`);
           });
       }
     },
@@ -678,7 +656,7 @@ export default {
     handleFileChange(event) {
       // 동일한 파일명이 연속으로 엽로드 될 경우, 화면단에는 1개만 조회됨
       // 파일명(1).확장자와 같은 형식으로 추후 구현 필요
-      console.log(event.target.files[0].name);
+      // console.log(event.target.files[0].name);
 
       // 레드마인 관리자 페이지에서 첨부파일 최대 크기 변경 가능
       if (event.target.files[0].size > 5120000) {
@@ -696,7 +674,7 @@ export default {
       //5120KB
 
       for (let key of formData.keys()) {
-        console.log(key, ":", formData.get(key));
+        // console.log(key, ":", formData.get(key));
       }
 
       //api 호출해서 첨부파일 토큰 받아오기
@@ -716,7 +694,7 @@ export default {
           }
         })
         .catch((e) => {
-          console.log(e);
+          console.log(`ERROR:${e}`);
         });
     },
   },

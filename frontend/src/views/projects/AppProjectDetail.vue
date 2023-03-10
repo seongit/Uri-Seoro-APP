@@ -64,7 +64,7 @@ export default {
         this.description = resObj.description;
       })
       .catch((error) => {
-        console.log(error);
+        console.log(`ERROR:${error}`);
       });
   },
 

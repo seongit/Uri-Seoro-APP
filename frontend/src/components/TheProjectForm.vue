@@ -142,7 +142,7 @@ export default {
       let customRegExp = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
 
       if (customRegExp.test(identifier)) {
-        console.log(customRegExp.test(identifier));
+        // console.log(customRegExp.test(identifier));
         identifier = identifier.replace(customRegExp, "");
       }
 
@@ -184,7 +184,7 @@ export default {
           is_public: this.resObj.is_public,
         };
 
-        console.log(this.$route.params.id);
+        // console.log(this.$route.params.id);
 
         if (this.$route.params.id) {
           let requestProject = {
@@ -195,7 +195,7 @@ export default {
           apiProject
             .editProject(this.$route.params.id, requestProject)
             .then((response) => {
-              console.log(response);
+              // console.log(response);
 
               alert(`프로젝트 정보 수정 완료`);
 
@@ -204,7 +204,7 @@ export default {
               });
             })
             .catch((error) => {
-              console.log(error);
+              console.log(`ERROR:${error}`);
             });
         } else {
           // 프로젝트 생성
@@ -219,7 +219,7 @@ export default {
               }
             })
             .catch((error) => {
-              alert(`${error.response.data.message}`);
+              alert(`프로젝트 생성 실패`);
             });
         }
       } else {
@@ -246,7 +246,7 @@ export default {
       if (this.resObj.name != "" && this.resObj.identifier != "") {
         result = true;
       } else {
-        console.log(this.name);
+        // console.log(this.name);
       }
 
       return result;

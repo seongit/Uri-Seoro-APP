@@ -43,7 +43,7 @@
             <p>{{ item.name }}</p>
             <!--프로젝트 개요-->
             <div>
-              {{ item.description }}
+              {{ item.description.substr(0, 200)}}
             </div>
           </div>
         </div>
@@ -89,7 +89,6 @@ export default {
         await apiProject
           .getAllProjects(isPublic)
           .then((response) => {
-
             if (this.$store.getters.isAdmin) {
               // 관리자일 경우 전체 프로젝트 조회
               this.projectsArr = response.data.projects;
@@ -126,7 +125,7 @@ export default {
             }
           })
           .catch((error) => {
-            console.log(error);
+            console.log(`ERROR:${error}`);
           });
       } else {
         // 로그인하지 않았을 경우 -> Public 프로젝트만 조회
@@ -136,7 +135,7 @@ export default {
             this.projectsArr = response.data.projects;
           })
           .catch((error) => {
-            console.log(error);
+            console.log(`ERROR:${error}`);
           });
       }
     },

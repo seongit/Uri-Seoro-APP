@@ -68,7 +68,7 @@ export default {
           this.setSelectBoxDataToAssignedMember(this.issueDetailObj.projectId);
         })
         .catch((error) => {
-          console.log(error);
+          console.log(`ERROR:${error}`);
         });
     },
 
@@ -89,7 +89,7 @@ export default {
           // console.log(this.issueDetailObj.projectMembersList);
         })
         .catch((error) => {
-          console.log(error);
+          console.log(`ERROR:${error}`);
         });
     },
   },

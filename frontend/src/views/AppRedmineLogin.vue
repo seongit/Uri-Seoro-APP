@@ -106,10 +106,10 @@ export default {
       await apiUser
         .login(requestData)
         .then((response) => {
-          console.log(response);
+          // console.log(response);
           let resObj = response.data;
 
-          console.log(resObj);
+          // console.log(resObj);
           // response data를 store에 저장
           this.$store.commit("setuserInfo", resObj);
 
@@ -145,7 +145,7 @@ export default {
           );
         })
         .catch((error) => {
-          console.log(error);
+          console.log(`ERROR:${error}`);
         });
     },
   },

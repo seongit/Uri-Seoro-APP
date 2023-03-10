@@ -95,7 +95,7 @@ export default {
           document.getElementById("inputIdentifier").setAttribute("disabled", true);
         })
         .catch((error) => {
-          console.log(error);
+          console.log(`ERROR:${error}`);
         });
     },
 

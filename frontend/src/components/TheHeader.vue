@@ -82,11 +82,11 @@
           <div v-if="isUserLogin">
             <a class="nav-link" @click="logoutUser"> 로그아웃 </a>
           </div>
-          <div v-else>
+          <!-- <div v-else>
             <router-link class="nav-link" active-class="active" exact :to="{ name: 'register' }">
               회원가입
             </router-link>
-          </div>
+          </div> -->
         </li>
       </ul>
     </div>
@@ -123,7 +123,9 @@ export default {
       sessionStorage.clear();
 
       // 페이지 새로고침
-      location.reload();
+      this.$router.push({
+        path: `/`,
+      });
     },
 
     // sessionStorage의 value를 $store에 저장한다.

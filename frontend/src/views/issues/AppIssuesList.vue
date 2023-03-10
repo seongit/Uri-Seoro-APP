@@ -224,9 +224,6 @@ export default {
           name: "우선순위",
         },
         {
-          name: "담당자",
-        },
-        {
           name: "진척도",
         },
         {
@@ -353,13 +350,13 @@ export default {
           this.trackerId = res.trackers[0].id;
         })
         .catch((error) => {
-          console.log(error);
+          console.log(`ERROR:${error}`);
         }),
         // 상태 전체 목록 조회
         apiIssue
           .getIssueStatusArr()
           .then((response) => {
-            console.log(response);
+            // console.log(response);
 
             let res = response.data;
 
@@ -370,7 +367,7 @@ export default {
             this.statusId = res.issue_statuses[0].id;
           })
           .catch((error) => {
-            console.log(error);
+            console.log(`ERROR:${error}`);
           }),
         // 우선 순위 전체 목록 조회
         apiIssue
@@ -385,7 +382,7 @@ export default {
             this.priorityId = res.issue_priorities[0].id;
           })
           .catch((error) => {
-            console.log(error);
+            console.log(`ERROR:${error}`);
           });
     },
 
@@ -465,11 +462,6 @@ export default {
           }
           break;
 
-        case "담당자":
-          {
-          }
-          break;
-
         case "진척도":
           {
             let contextMenuEl = document.getElementById("firstContextMenu");
@@ -488,7 +480,7 @@ export default {
                   }
                 })
                 .catch((error) => {
-                  console.log(error);
+                  console.log(`ERROR:${error}`);
                 });
             }
 
@@ -541,12 +533,6 @@ export default {
             issue.priority_id = clickedOptionID;
           }
           break;
-
-        case "담당자":
-          {
-          }
-          break;
-
         case "진척도":
           {
             issue.done_ratio = clickedOptionValue;
@@ -564,7 +550,7 @@ export default {
       apiIssue
         .editIssue(this.ClickedRowData.id, requestIssue)
         .then((response) => {
-          console.log(response.data);
+          // console.log(response.data);
           if (response.status == 200) {
             // 다음과 같이하면 에러남
             // Uncaught (in promise) NavigationDuplicated: Avoided redundant navigation to current location: "/issues/227".
@@ -577,7 +563,7 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(error);
+          console.log(`ERROR:${error}`);
         });
 
       // 하위 context-menu 항목 클릭 시, 하위를 포함한 상위 context-menu가 모두 사라진다.
@@ -592,8 +578,8 @@ export default {
     showSubMenu(top, clickedStatus) {
       this.hideAllSubMenu();
 
-      console.log(top);
-      console.log(clickedStatus);
+      // console.log(top);
+      // console.log(clickedStatus);
 
       switch (clickedStatus) {
         case "편집":
@@ -618,12 +604,6 @@ export default {
             this.$refs.priorityContextMenu.showMenu(top?.event);
           }
           break;
-
-        case "담당자":
-          {
-          }
-          break;
-
         case "진척도":
           {
             this.$refs.doneRatioContextMenu.showMenu(top?.event);

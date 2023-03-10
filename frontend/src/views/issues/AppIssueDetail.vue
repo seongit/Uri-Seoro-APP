@@ -2,8 +2,18 @@
   <!--eslint-disable-->
   <div>
     <!--메뉴 헤더-->
-    <the-main-menu :name="projectName"></the-main-menu>
+    <!-- <the-main-menu :name="projectName"></the-main-menu> -->
 
+    <div>
+      <nav class="navbar navbar-light">
+        <div class="container">
+          <!--메인 메뉴 제목-->
+          <div class="custom-form">
+            <h1>{{ projectName }}</h1>
+          </div>
+        </div>
+      </nav>
+    </div>
     <!--페이지 메인 영역-->
     <div class="container page">
       <!--페이지 상단바-->
@@ -268,7 +278,7 @@ export default {
           this.attachments = issueObj.attachments;
         })
         .catch((error) => {
-          console.log(error);
+          console.log(`ERROR:${error}`);
         });
     },
 
@@ -294,7 +304,7 @@ export default {
           // console.log(this.issueDetailObj.projectMembersList);
         })
         .catch((error) => {
-          console.log(error);
+          console.log(`ERROR:${error}`);
         });
     },
 
@@ -314,7 +324,7 @@ export default {
             }
           })
           .catch((error) => {
-            console.log(error);
+            console.log(`ERROR:${error}`);
           });
       }
     },
@@ -335,7 +345,7 @@ export default {
         apiIssue
           .deleteAttachment(attachmentID)
           .then((response) => {
-            console.log(response);
+            // console.log(response);
 
             if (response.data == "200 OK") {
               // 화면단에서 첨부파일 삭제
@@ -344,11 +354,9 @@ export default {
             }
           })
           .catch((error) => {
-            console.log(error);
+            console.log(`ERROR:${error}`);
           });
       }
-
-      console.log(attachmentID);
     },
 
     IssuesListPage() {
@@ -375,7 +383,7 @@ export default {
 }
 
 .attachment-item {
-  width: 3%;
+  width: 5%;
   height: 3%;
   border-radius: 3px;
   cursor: pointer;

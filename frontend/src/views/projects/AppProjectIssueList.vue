@@ -226,9 +226,6 @@ export default {
           name: "우선순위",
         },
         {
-          name: "담당자",
-        },
-        {
           name: "진척도",
         },
         {
@@ -324,7 +321,7 @@ export default {
         this.isPublic = resObj.is_public;
       })
       .catch((error) => {
-        console.log(error);
+        console.log(`ERROR:${error}`);
       });
   },
 
@@ -413,12 +410,6 @@ export default {
             contextMenuEl.addEventListener("click", this.showSubMenu(top, clickedStatus));
           }
           break;
-
-        case "담당자":
-          {
-          }
-          break;
-
         case "진척도":
           {
             let contextMenuEl = document.getElementById("firstContextMenu");
@@ -437,7 +428,7 @@ export default {
                   }
                 })
                 .catch((error) => {
-                  console.log(error);
+                  console.log(`ERROR:${error}`);
                 });
             }
 
@@ -588,11 +579,6 @@ export default {
           }
           break;
 
-        case "담당자":
-          {
-          }
-          break;
-
         case "진척도":
           {
             issue.done_ratio = clickedOptionValue;
@@ -623,7 +609,7 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(error);
+          console.log(`ERROR:${error}`);
         });
 
       // 하위 context-menu 항목 클릭 시, 하위를 포함한 상위 context-menu가 모두 사라진다.
@@ -662,11 +648,6 @@ export default {
         case "우선순위":
           {
             this.$refs.priorityContextMenu.showMenu(top?.event);
-          }
-          break;
-
-        case "담당자":
-          {
           }
           break;
 
@@ -730,7 +711,7 @@ export default {
           this.trackerId = res.trackers[0].id;
         })
         .catch((error) => {
-          console.log(error);
+          console.log(`ERROR:${error}`);
         }),
         // 상태 전체 목록 조회
         apiIssue
@@ -747,7 +728,7 @@ export default {
             this.statusId = res.issue_statuses[0].id;
           })
           .catch((error) => {
-            console.log(error);
+            console.log(`ERROR:${error}`);
           }),
         // 우선 순위 전체 목록 조회
         apiIssue
@@ -762,7 +743,7 @@ export default {
             this.priorityId = res.issue_priorities[0].id;
           })
           .catch((error) => {
-            console.log(error);
+            console.log(`ERROR:${error}`);
           });
     },
 

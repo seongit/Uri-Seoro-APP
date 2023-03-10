@@ -116,7 +116,7 @@ export default {
 
   methods: {
     onClickedIssueBtn(id) {
-      console.log("id=====>" + id);
+      // console.log("id=====>" + id);
     },
   },
 };
