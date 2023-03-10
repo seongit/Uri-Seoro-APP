@@ -39,19 +39,18 @@
                   일감
                 </router-link>
               </li>
+              <!--관리자만 해당 항목 조회됨-->
+              <li class="nav-item" v-if="isAdminAndProjectId">
+                <router-link
+                  class="nav-link"
+                  active-class="active"
+                  exact
+                  :to="{ name: 'projectEdit' }"
+                >
+                  설정
+                </router-link>
+              </li>
             </div>
-
-            <!--관리자만 해당 항목 조회됨-->
-            <li class="nav-item" v-if="isAdminAndProjectId">
-              <router-link
-                class="nav-link"
-                active-class="active"
-                exact
-                :to="{ name: 'projectEdit' }"
-              >
-                설정
-              </router-link>
-            </li>
           </ul>
         </div>
       </div>
@@ -81,8 +80,6 @@ export default {
     },
 
     getPageTitle() {
-      console.log(this.$route.path);
-
       if (this.$route.params.id) {
         this.projectName = this.$props.name;
         this.projectIdFromRouteParams = this.$route.params.id;
@@ -113,7 +110,7 @@ export default {
     if (this.projectIdFromRouteParams) {
       this.isGetSelectedIssue = true;
       this.isGetAllIssues = false;
-      this.isGetSelectedProject = true; 
+      this.isGetSelectedProject = true;
     }
   },
 
