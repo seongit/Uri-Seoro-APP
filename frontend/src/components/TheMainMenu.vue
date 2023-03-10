@@ -15,12 +15,7 @@
           <ul class="nav navbar-nav">
             <!--프로젝트 전체 목록 페이지-->
             <li class="nav-item">
-              <router-link
-                class="nav-link selected"
-                active-class="active"
-                exact
-                :to="{ name: 'projects' }"
-              >
+              <router-link class="nav-link" active-class="active" exact :to="{ name: 'projects' }">
                 프로젝트
               </router-link>
             </li>
@@ -86,6 +81,8 @@ export default {
     },
 
     getPageTitle() {
+      console.log(this.$route.path);
+
       if (this.$route.params.id) {
         this.projectName = this.$props.name;
         this.projectIdFromRouteParams = this.$route.params.id;
@@ -116,7 +113,7 @@ export default {
     if (this.projectIdFromRouteParams) {
       this.isGetSelectedIssue = true;
       this.isGetAllIssues = false;
-      this.isGetSelectedProject = true;
+      this.isGetSelectedProject = true; 
     }
   },
 

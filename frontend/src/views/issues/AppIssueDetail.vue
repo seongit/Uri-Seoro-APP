@@ -2,7 +2,7 @@
   <!--eslint-disable-->
   <div>
     <!--메뉴 헤더-->
-    <!-- <the-main-menu></the-main-menu> -->
+    <the-main-menu :name="projectName"></the-main-menu>
 
     <!--페이지 메인 영역-->
     <div class="container page">
@@ -38,7 +38,7 @@
           <div class="content-items-margin">
             <h3>{{ subject }}</h3>
             <p>
-              <b>Redmind Admin</b>이(가) <b>{{ issueCreateDate }}</b
+              <b>{{ issueCreateDate }}</b
               >에 추가함
             </p>
           </div>
@@ -89,6 +89,7 @@
               <!--삭제 버튼-->
               <!--관리자 + 담당자만 해당 버튼 보이도록 할 것 -->
               <font-awesome-icon
+                v-if="isAdminOrAssigned"
                 icon="fa-solid fa-trash"
                 class="btn"
                 @click="handleFileDelete(index, item.id)"
@@ -139,7 +140,8 @@ export default {
     return {
       isVisable: false,
       issueId: 0,
-      projectId: 0, // 23.03.09 테스트
+      projectId: 0,
+      projectName: "",
       trackerName: "",
       statusName: "",
       priorityName: "",
@@ -226,6 +228,7 @@ export default {
 
           this.issueId = issueObj.id;
           this.projectId = issueObj.project.id;
+          this.projectName = issueObj.project.name;
           this.trackerId = issueObj.tracker.id;
           this.trackerName = issueObj.tracker.name;
           this.statusId = issueObj.status.id;
