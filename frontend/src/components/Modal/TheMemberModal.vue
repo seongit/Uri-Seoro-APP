@@ -166,6 +166,7 @@ export default {
       this.$modal.hide("member-modal");
       // 요청 MEMber 초기화
       this.requestMemberArr = [];
+      this.requestRolesArr = [];
       location.reload();
     },
 
@@ -213,7 +214,8 @@ export default {
         .then((response) => {
           // console.log(this.membersArr.length);
 
-          let countMember = this.membersArr.length;
+          // memberships의 데이터가 undefined일 경우를 대비하여 ?.length로 접근
+          let countMember = this.membersArr?.length;
           let memberArr = this.membersArr;
           const usersArr = response.data.users;
 
@@ -239,7 +241,7 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(`ERROR:${e}`);
+          console.log(`ERROR:${error}`);
         });
     },
 
@@ -286,6 +288,7 @@ export default {
         this.requestRolesArr.push(roleId);
       }
       this.setRolesCheckbox();
+      console.log(`${this.requestRolesArr}`);
     },
 
     // 역할 (=필수값) 선택 여부에 따른 확인 버튼 화면 제어
@@ -318,12 +321,15 @@ export default {
           // console.log(response);
 
           if (response.status == 200) {
+            // 초기화
+            this.requestMemberArr = [];
+            this.requestRolesArr = [];
             alert(`구성원 등록을 완료하였습니다.`);
 
             this.$modal.hide("member-modal");
             //정상적으로 구성원 등록이 완료되었을 경우에만 reloadModal
             this.$emit("reloadModal", this.reloadModal);
-            this.requestMemberArr = [];
+            this.$modal.hide("member-modal");
           }
         })
         .catch((error) => {
