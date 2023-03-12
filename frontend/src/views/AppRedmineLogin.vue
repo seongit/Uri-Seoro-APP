@@ -126,7 +126,7 @@ export default {
           this.getUserDetail(resObj.userNo);
         })
         .catch((e) => {
-          alert(`${e.response.data.message}`);
+          return alert("아이디 또는 이메일을 확인해주세요.");
         });
     },
 
@@ -135,7 +135,6 @@ export default {
       await apiUser
         .getUserDetail(userNo)
         .then((response) => {
-          
           let resObj = response.data.user.memberships;
           this.$store.commit("setuserMembershipInfo", resObj);
 
