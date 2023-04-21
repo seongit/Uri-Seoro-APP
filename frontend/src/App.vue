@@ -3,7 +3,8 @@
     <The-Header></The-Header>
     <div></div>
     <router-view></router-view>
-    <The-Footer></The-Footer>
+    <!--SonarQuebe 테스트로 인해 주석처리하였음-->
+    <!-- <The-Footer></The-Footer> -->
   </div>
 </template>
 

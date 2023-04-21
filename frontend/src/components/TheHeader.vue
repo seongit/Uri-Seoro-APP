@@ -50,6 +50,12 @@
             프로젝트
           </router-link>
         </li>
+        <!--SonarQube Rules 테스트-->
+        <li v-if="isUserLogin" class="nav-item">
+          <router-link class="nav-link" active-class="active" exact :to="{ name: 'sonarRules' }">
+            Rules
+          </router-link>
+        </li>
         <!--todo : 관리자로 로그인한 경우에만 관리 페이지 보여질 것-->
         <li v-if="isAdmin" class="nav-item">
           <router-link class="nav-link" active-class="active" exact :to="{ name: 'admin' }">

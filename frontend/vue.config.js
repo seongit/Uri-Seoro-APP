@@ -8,7 +8,13 @@ module.exports = defineConfig({
   // npm run serve 개발 진행시에 포트가 다르기때문에 프록시 설정
    devServer: {
      //proxy: 'http://localhost:8081' // api 서버 포트 번호로 지정
-    proxy : process.env.VUE_API_URL || 'http://localhost:8081'
+    proxy : process.env.VUE_API_URL || 'http://localhost:8081',
+    client: {
+      overlay: true,
+      // 웹소켓용 url 지정
+      webSocketURL: "ws://0.0.0.0:80/ws",
+    },
+    
   },
 
   // nginx reverse proxy 설정 시 다음과 같이 구성함

@@ -157,6 +157,11 @@ const routes = [
     name: 'userDelete',
     component: () => import('../views/users/AppUserDelete.vue'),
   },
+  {
+    path: '/sonar/rules',
+    name: 'sonarRules',
+    component: () => import('../views/sonarqube/AppSonarRuleList.vue')
+  }
 
 
 ];
