@@ -9,38 +9,38 @@
         <div class="left-layout-css">
           <div v-for="(item, index) in languagesList" :key="index" :value="item.id">
             <!-- <label>{{ item.val }} {{ item.count }}</label> -->
-            <span >{{ item.val }} </span>
-            <span style="float:right">{{ item.count }}</span>
+            <span>{{ item.val }} </span>
+            <span style="float: right">{{ item.count }}</span>
           </div>
         </div>
 
-        <hr>
+        <hr />
 
         <strong>Type</strong>
         <div class="left-layout-css">
           <div v-for="(item, index) in typeList" :key="index" :value="item.id">
-            <span >{{ item.val }} </span>
-            <span style="float:right">{{ item.count }}</span>
+            <span>{{ item.val }} </span>
+            <span style="float: right">{{ item.count }}</span>
           </div>
         </div>
 
-        <hr>
+        <hr />
 
         <strong>Tag</strong>
         <div class="left-layout-css">
           <div v-for="(item, index) in tagList" :key="index" :value="item.id">
-            <span >{{ item.val }} </span>
-            <span style="float:right">{{ item.count }}</span>
+            <span>{{ item.val }} </span>
+            <span style="float: right">{{ item.count }}</span>
           </div>
         </div>
 
-        <hr>
+        <hr />
 
         <strong>Repository</strong>
         <div class="left-layout-css">
           <div v-for="(item, index) in repositoryList" :key="index" :value="item.id">
-            <span >{{ item.val }} </span>
-            <span style="float:right">{{ item.count }}</span>
+            <span>{{ item.val }} </span>
+            <span style="float: right">{{ item.count }}</span>
           </div>
         </div>
       </div>
@@ -57,7 +57,17 @@
             class="table table-hover table-height"
             @vuetable:pagination-data="onPaginationData"
           >
+            <div slot="sonar-rule-slot" slot-scope="props">
+              {{ props.rowData.name }}
+            </div>
           </vuetable>
+
+          <!--html 테스트용 
+          <div>
+            <ul>
+              <li v-for="(item, index) in allRulesList">{{ item.name }}></li>
+            </ul>
+          </div>-->
         </div>
       </div>
       <vuetable-pagination
@@ -94,6 +104,7 @@ export default {
        */
       fields: FieldsDef,
       css: cssConfig,
+      allRulesList: [], // 테스트용
       languagesList: [],
       typeList: [],
       tagList: [],
@@ -102,6 +113,7 @@ export default {
   },
 
   mounted() {
+    this.getRulesList();
     this.getRulefacets();
   },
 
@@ -120,6 +132,21 @@ export default {
       }
 
       return str;
+    },
+
+    /**
+     * 테스트
+     */
+
+    async getRulesList() {
+      await apiSonar
+        .getRulesList()
+        .then((response) => {
+          this.allRulesList = response.data.rules;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
 
     /**

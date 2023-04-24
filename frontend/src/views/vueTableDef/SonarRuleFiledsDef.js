@@ -2,7 +2,7 @@
 export default [
   
   {
-    name : "name",
+    name : "sonar-rule-slot",
     title : "name",
     width : "20%",
   },
@@ -27,8 +27,8 @@ export default [
 
       for(let i = 0; i < tmpArr.length; i++){
         tmp += tmpArr[i] + ",";
-        result = tmp.slice(0,-1);
-      }
+      }        
+      result = tmp.slice(0,-1);
   
       return result;
     }
