@@ -1,15 +1,15 @@
 package com.sekim.uriseoro.apiController;
 
 import com.sekim.uriseoro.config.enums.BaseURLType;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
-/* 테스트 중 */
-
+@Slf4j
 @RestController
-@RequestMapping("/test")
+@RequestMapping("/issues")
 public class IssueController {
 
     WebClient webClient = WebClient.builder()
@@ -27,5 +27,10 @@ public class IssueController {
                 .block();                   // await
     }
 
-
+    @GetMapping("/sq/custome")
+    public String sqCustom(){
+        //System.out.println("test");
+        log.info("test");
+        return "소나큐브 sonarlint 플러그인";
+    }
 }

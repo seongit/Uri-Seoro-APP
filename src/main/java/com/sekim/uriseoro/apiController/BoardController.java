@@ -1,12 +1,14 @@
 package com.sekim.uriseoro.apiController;
 
 import com.sekim.uriseoro.config.enums.BaseURLType;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
+@Slf4j
 @RestController
 @RequestMapping("/board")
 public class BoardController {
@@ -68,7 +70,7 @@ public class BoardController {
     @PatchMapping("/delete/{id}")
     public String delete(@PathVariable Long id){
 
-        System.out.println("app server " + id);
+        log.info("app server " + id);
 
         return webClient.patch().uri("/board/delete/"+id)
                 .retrieve()                 // client message 전송
